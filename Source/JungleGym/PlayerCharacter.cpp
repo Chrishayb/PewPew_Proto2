@@ -40,6 +40,9 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Set default values
+	BaseMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+
 
 }
 
@@ -53,7 +56,13 @@ void APlayerCharacter::MoveForward(float _value)
 
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, _value);
+		AddMovementInput(Direction, _value);	
+	}
+
+	// If detected player is not moving forward, cancel the sprint
+	if (_value <= 0.0f)
+	{
+		UnSprint();
 	}
 }
 
@@ -108,16 +117,19 @@ void APlayerCharacter::LookUp(float _value)
 
 void APlayerCharacter::Sprint()
 {
-	float walkSpeed = GetCharacterMovement()->MaxWalkSpeed;
-	float sprintSpeed = walkSpeed * SprintMultiplier;
-	GetCharacterMovement()->MaxWalkSpeed = sprintSpeed;
+	// Give the speed a multiplier base on the original max speed
+	float axisValue = InputComponent->GetAxisValue(TEXT("MoveForward"));
+	if (axisValue >= 0.0f)
+	{
+		float sprintSpeed = BaseMaxWalkSpeed * SprintMultiplier;
+		GetCharacterMovement()->MaxWalkSpeed = sprintSpeed;
+	}
 }
 
 void APlayerCharacter::UnSprint()
 {
-	float sprintSpeed = GetCharacterMovement()->MaxWalkSpeed;
-	float walkSpeed = sprintSpeed / SprintMultiplier;
-	GetCharacterMovement()->MaxWalkSpeed = walkSpeed;
+	// Reset the max speed to original
+	GetCharacterMovement()->MaxWalkSpeed = BaseMaxWalkSpeed;
 }
 
 // Called every frame
@@ -137,8 +149,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
 
-	PlayerInputComponent->BindAxis("TurnAtRate", this, &APlayerCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUpAtRate", this, &APlayerCharacter::LookUpAtRate);
+	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
 	PlayerInputComponent->BindAxis("Turn", this, &APlayerCharacter::Turn);
 	PlayerInputComponent->BindAxis("LookUp", this, &APlayerCharacter::LookUp);
 

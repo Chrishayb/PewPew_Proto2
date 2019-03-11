@@ -28,9 +28,16 @@ protected:
 	float BaseTurnRate;
 	float BaseLookupRate;
 
+	// This value gets the default MaxWalkSpeed from movement component and remember it
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	float BaseMaxWalkSpeed;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
 	float SprintMultiplier;
 	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	float BaseDamage;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
