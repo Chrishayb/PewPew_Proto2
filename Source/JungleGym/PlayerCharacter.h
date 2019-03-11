@@ -15,9 +15,44 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
+	/** FPS camera component for the player */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	class UCameraComponent* FPSCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunPoint")
+	class USceneComponent* GunShootingPoint;
+
+protected:
+
+	// Values that sets the turnning speed
+	float BaseTurnRate;
+	float BaseLookupRate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	float SprintMultiplier;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Called when the player move forward and backward
+	void MoveForward(float _value);
+
+	// Called when the player move left and right
+	void MoveRight(float _value);
+
+	// FPS Camera turnning
+		// For Controller
+	void TurnAtRate(float _value);
+	void LookUpAtRate(float _value);
+		// For Mouse
+	void Turn(float _value);
+	void LookUp(float _value);
+
+	// Player sprint and un-sprint
+	void Sprint();
+	void UnSprint();
+
 
 public:	
 	// Called every frame
