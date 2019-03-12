@@ -9,8 +9,11 @@
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Math/UnrealMathUtility.h"
 
 #include "Kismet/GameplayStatics.h"
+
+#include "EnemyBase.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -42,7 +45,7 @@ void APlayerCharacter::BeginPlay()
 
 	// Set default values
 	BaseMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
-
+	DesireFOV = BaseFOV = FPSCamera->FieldOfView;
 
 }
 
@@ -123,6 +126,7 @@ void APlayerCharacter::Sprint()
 	{
 		float sprintSpeed = BaseMaxWalkSpeed * SprintMultiplier;
 		GetCharacterMovement()->MaxWalkSpeed = sprintSpeed;
+		DesireFOV = BaseFOV * SprintFOVMultiplier;
 	}
 }
 
@@ -130,12 +134,31 @@ void APlayerCharacter::UnSprint()
 {
 	// Reset the max speed to original
 	GetCharacterMovement()->MaxWalkSpeed = BaseMaxWalkSpeed;
+	DesireFOV = BaseFOV;
+}
+
+void APlayerCharacter::UpdateFOV(float _deltaTime)
+{
+	float currentFOV = FPSCamera->FieldOfView;
+	if (currentFOV < DesireFOV)
+	{
+		float resultFOV = FMath::Min(currentFOV + (_deltaTime * SprintFOVZoomSpeed), DesireFOV);
+		FPSCamera->SetFieldOfView(resultFOV);
+	}
+	else if (currentFOV > DesireFOV)
+	{
+		float resultFOV = FMath::Max(currentFOV - (_deltaTime * SprintFOVZoomSpeed), DesireFOV);
+		FPSCamera->SetFieldOfView(resultFOV);
+	}
 }
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Update the FOV for the player
+	UpdateFOV(DeltaTime);
 
 }
 

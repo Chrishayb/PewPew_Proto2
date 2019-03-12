@@ -32,8 +32,20 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	float BaseMaxWalkSpeed;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
 	float SprintMultiplier;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
+	float SprintFOVMultiplier;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
+	float SprintFOVZoomSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float BaseFOV;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float DesireFOV;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 	float BaseDamage;
@@ -59,6 +71,11 @@ protected:
 	// Player sprint and un-sprint
 	void Sprint();
 	void UnSprint();
+
+private:
+
+	// Called in tick to interp the FOV to its desire
+	void UpdateFOV(float _deltaTime);
 
 
 public:	

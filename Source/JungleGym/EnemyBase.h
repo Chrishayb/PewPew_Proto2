@@ -24,8 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// BlurprintImplementable event called when enemy takes damage
-	virtual void TakeDamage(float _damage);
+	virtual void ReceivePlayerDamage(float _damage);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "TakeDamage"))
-	void ReceieveTakeDamage(float _damage);
+	void Receive_ReceivePlayerDamage(float _damage);
 
 };
