@@ -143,26 +143,25 @@ void APlayerCharacter::UnSprint()
 	GetCharacterMovement()->MaxWalkSpeed = BaseMaxWalkSpeed;
 }
 
+void APlayerCharacter::PerformFiring()
+{
+
+}
+
+void APlayerCharacter::StartFireCountDown()
+{
+
+}
+
 void APlayerCharacter::UpdateFOV()
 {
-	float currentMoveSpeed = GetCharacterMovement()->Velocity.Size();
-	float alphaClampResult = FMath::Clamp((currentMoveSpeed - BaseMaxWalkSpeed) / (SprintMaxWalkSpeed - BaseMaxWalkSpeed), 0.0f, 1.0f);
+	float currentMoveSpeed = (GetCharacterMovement()->Velocity * GetActorForwardVector()).Size();
+	float speedDiffWalkSprint = SprintMaxWalkSpeed - BaseMaxWalkSpeed;
+	float clampValue = (currentMoveSpeed - BaseMaxWalkSpeed) / (speedDiffWalkSprint);
+	float alphaClampResult = FMath::Clamp(clampValue, 0.0f, 1.0f);
 	
 	SpeedLineInstance->SetScalarParameterValue(FName("Weight"), alphaClampResult);
 	FPSCamera->SetFieldOfView(FMath::Lerp(BaseFOV, SprintingFOV, alphaClampResult));
-
-
-// 	float currentFOV = FPSCamera->FieldOfView;
-// 	if (currentFOV < SprintingFOV)
-// 	{
-// 		float resultFOV = FMath::Min(currentFOV + (_deltaTime * SprintFOVZoomSpeed), SprintingFOV);
-// 		FPSCamera->SetFieldOfView(resultFOV);
-// 	}
-// 	else if (currentFOV > SprintingFOV)
-// 	{
-// 		float resultFOV = FMath::Max(currentFOV - (_deltaTime * SprintFOVZoomSpeed), SprintingFOV);
-// 		FPSCamera->SetFieldOfView(resultFOV);
-// 	}
 }
 
 // Called every frame
@@ -195,6 +194,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &APlayerCharacter::Sprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayerCharacter::UnSprint);
+
+
 
 }
 

@@ -39,9 +39,6 @@ protected:
 	float SprintFOVMultiplier;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
-	float SprintFOVZoomSpeed;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
 	class UMaterialInterface* SpeedLineMaterial;
 	class UMaterialInstanceDynamic* SpeedLineInstance;
 
@@ -59,6 +56,18 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 	float BaseDamage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	float FireRateRPM;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
+	bool bFireInCountDown;
+	
+
+
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 
 protected:
 	// Called when the game starts or when spawned
@@ -81,6 +90,14 @@ protected:
 	// Player sprint and un-sprint
 	void Sprint();
 	void UnSprint();
+
+	// Shooting machanic
+		// Called when successfully shoot, spawn raycast and test to see if hit
+	void PerformFiring();
+		// Called after PerformFiring() to start fire rate count down
+	void StartFireCountDown();
+
+
 
 private:
 
