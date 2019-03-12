@@ -22,6 +22,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunPoint")
 	class USceneComponent* GunShootingPoint;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PostProcess")
+	class UPostProcessComponent* PlayerPostProcess;
+
 protected:
 
 	// Values that sets the turnning speed
@@ -29,9 +32,6 @@ protected:
 	float BaseLookupRate;
 
 	// This value gets the default MaxWalkSpeed from movement component and remember it
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
-	float BaseMaxWalkSpeed;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
 	float SprintMultiplier;
 
@@ -41,11 +41,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
 	float SprintFOVZoomSpeed;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
+	class UMaterialInterface* SpeedLineMaterial;
+	class UMaterialInstanceDynamic* SpeedLineInstance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float BaseMaxWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float SprintMaxWalkSpeed;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float BaseFOV;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
-	float DesireFOV;
+	float SprintingFOV;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 	float BaseDamage;
@@ -75,7 +85,7 @@ protected:
 private:
 
 	// Called in tick to interp the FOV to its desire
-	void UpdateFOV(float _deltaTime);
+	void UpdateFOV();
 
 
 public:	

@@ -9,7 +9,10 @@
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/PostProcessComponent.h"
 #include "Math/UnrealMathUtility.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Materials/MaterialInterface.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -34,7 +37,8 @@ APlayerCharacter::APlayerCharacter()
 	GunShootingPoint = CreateDefaultSubobject<USceneComponent>(TEXT("GunShootingPoint"));
 	GunShootingPoint->SetupAttachment(GetMesh());
 
-
+	PlayerPostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PlayerPostProcess"));
+	PlayerPostProcess->SetupAttachment(RootComponent);
 
 }
 
@@ -45,8 +49,13 @@ void APlayerCharacter::BeginPlay()
 
 	// Set default values
 	BaseMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
-	DesireFOV = BaseFOV = FPSCamera->FieldOfView;
+	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
+	BaseFOV = FPSCamera->FieldOfView;
+	SprintingFOV = BaseFOV * SprintFOVMultiplier;
 
+	// Create speed line material instance
+	SpeedLineInstance = UMaterialInstanceDynamic::Create(SpeedLineMaterial, this);
+	PlayerPostProcess->AddOrUpdateBlendable(SpeedLineInstance, 1.0f);
 }
 
 void APlayerCharacter::MoveForward(float _value)
@@ -124,9 +133,7 @@ void APlayerCharacter::Sprint()
 	float axisValue = InputComponent->GetAxisValue(TEXT("MoveForward"));
 	if (axisValue >= 0.0f)
 	{
-		float sprintSpeed = BaseMaxWalkSpeed * SprintMultiplier;
-		GetCharacterMovement()->MaxWalkSpeed = sprintSpeed;
-		DesireFOV = BaseFOV * SprintFOVMultiplier;
+		GetCharacterMovement()->MaxWalkSpeed = SprintMaxWalkSpeed;
 	}
 }
 
@@ -134,22 +141,28 @@ void APlayerCharacter::UnSprint()
 {
 	// Reset the max speed to original
 	GetCharacterMovement()->MaxWalkSpeed = BaseMaxWalkSpeed;
-	DesireFOV = BaseFOV;
 }
 
-void APlayerCharacter::UpdateFOV(float _deltaTime)
+void APlayerCharacter::UpdateFOV()
 {
-	float currentFOV = FPSCamera->FieldOfView;
-	if (currentFOV < DesireFOV)
-	{
-		float resultFOV = FMath::Min(currentFOV + (_deltaTime * SprintFOVZoomSpeed), DesireFOV);
-		FPSCamera->SetFieldOfView(resultFOV);
-	}
-	else if (currentFOV > DesireFOV)
-	{
-		float resultFOV = FMath::Max(currentFOV - (_deltaTime * SprintFOVZoomSpeed), DesireFOV);
-		FPSCamera->SetFieldOfView(resultFOV);
-	}
+	float currentMoveSpeed = GetCharacterMovement()->Velocity.Size();
+	float alphaClampResult = FMath::Clamp((currentMoveSpeed - BaseMaxWalkSpeed) / (SprintMaxWalkSpeed - BaseMaxWalkSpeed), 0.0f, 1.0f);
+	
+	SpeedLineInstance->SetScalarParameterValue(FName("Weight"), alphaClampResult);
+	FPSCamera->SetFieldOfView(FMath::Lerp(BaseFOV, SprintingFOV, alphaClampResult));
+
+
+// 	float currentFOV = FPSCamera->FieldOfView;
+// 	if (currentFOV < SprintingFOV)
+// 	{
+// 		float resultFOV = FMath::Min(currentFOV + (_deltaTime * SprintFOVZoomSpeed), SprintingFOV);
+// 		FPSCamera->SetFieldOfView(resultFOV);
+// 	}
+// 	else if (currentFOV > SprintingFOV)
+// 	{
+// 		float resultFOV = FMath::Max(currentFOV - (_deltaTime * SprintFOVZoomSpeed), SprintingFOV);
+// 		FPSCamera->SetFieldOfView(resultFOV);
+// 	}
 }
 
 // Called every frame
@@ -158,7 +171,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Update the FOV for the player
-	UpdateFOV(DeltaTime);
+	UpdateFOV();
 
 }
 
