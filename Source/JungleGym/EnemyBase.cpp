@@ -31,3 +31,8 @@ void AEnemyBase::ReceivePlayerDamage(float _damage)
 	Receive_ReceivePlayerDamage(_damage);
 }
 
+void AEnemyBase::EnemyTakeDamage(float _damage)
+{
+	ReceivePlayerDamage(_damage);
+}
+
