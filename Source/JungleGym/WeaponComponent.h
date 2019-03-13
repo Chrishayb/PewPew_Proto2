@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon: Stats")
 	float WeaponRPM;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon: Stats")
+	float WeaponMaxRange;
+
 	// Timer to handle fire rate count down
 	FTimerHandle FireRateCountDownTimerHandle;
 
@@ -59,6 +62,6 @@ public:
 
 	// Called when the player is performing fire with this weapon
 	UFUNCTION()
-	void WeaponPerformFiring();
+	void WeaponPerformFiring(FTransform _muzzleWorldLocation);
 	
 };

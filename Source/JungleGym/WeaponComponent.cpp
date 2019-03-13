@@ -4,6 +4,7 @@
 
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "CollisionQueryParams.h"
 
 #include "WeaponDataBase.h"
 
@@ -36,10 +37,25 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-void UWeaponComponent::WeaponPerformFiring()
+void UWeaponComponent::WeaponPerformFiring(FTransform _muzzleWorldLocation)
 {
 	bReadyToShoot = false;
-	GetWorld()->GetTimerManager().SetTimer(FireRateCountDownTimerHandle, this, &UWeaponComponent::OnFireRateCountDownFinish, CoolDownBetweenShot);
+	GetWorld()->GetTimerManager().SetTimer(
+		FireRateCountDownTimerHandle, 
+		this, 
+		&UWeaponComponent::OnFireRateCountDownFinish, 
+		CoolDownBetweenShot);
+
+	FHitResult weaponHitResult;
+	FVector hitStart = _muzzleWorldLocation.GetLocation();
+	FVector hitEnd = hitStart + (_muzzleWorldLocation.GetRotation().GetForwardVector() * WeaponMaxRange);
+	FCollisionObjectQueryParams queryObjectTypes;
+	queryObjectTypes.AddObjectTypesToQuery(ECC_Pawn);
+	queryObjectTypes.AddObjectTypesToQuery(ECC_WorldStatic);
+	queryObjectTypes.AddObjectTypesToQuery(ECC_PhysicsBody);
+	
+	GetWorld()->LineTraceSingleByObjectType(weaponHitResult, hitStart, hitEnd, queryObjectTypes);
+
 }
 
 void UWeaponComponent::WeaponDataResetAndCalculate()
