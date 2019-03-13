@@ -15,6 +15,7 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CurrentHealth = MaxHealth;
 }
 
 // Called every frame

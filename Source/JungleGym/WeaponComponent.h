@@ -20,20 +20,25 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	// The Data of the weapon preseted in blueprint
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon: Preset")
-	class UWeaponDataBase* WeaponDataPreset;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon: Stats")
-	float WeaponBaseDamage;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon: Stats")
-	float WeaponRPM;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon: Stats")
-	float WeaponMaxRange;
+	TSubclassOf<class UWeaponDataBase> WeaponDataPresetClass;
 
 	// Timer to handle fire rate count down
 	FTimerHandle FireRateCountDownTimerHandle;
+
+	// Data Monitor in run time
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	float WeaponBaseDamage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	float WeaponRPM;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	float WeaponOverheatRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	float WeaponMaxRange;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
 	bool bReadyToShoot;
@@ -56,12 +61,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// Called to return the state of the gun to see if its able to shoot
-	UFUNCTION()
-	FORCEINLINE bool IsReadyToShoot() { return bReadyToShoot; }
-
 	// Called when the player is performing fire with this weapon
 	UFUNCTION()
 	void WeaponPerformFiring(FTransform _muzzleWorldLocation);
 	
+
+	// Called to return the state of the gun to see if its able to shoot
+	UFUNCTION()
+	FORCEINLINE bool IsReadyToShoot() { return bReadyToShoot; }
 };

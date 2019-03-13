@@ -7,6 +7,7 @@
 #include "CollisionQueryParams.h"
 
 #include "WeaponDataBase.h"
+#include "EnemyBase.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -52,18 +53,30 @@ void UWeaponComponent::WeaponPerformFiring(FTransform _muzzleWorldLocation)
 	FCollisionObjectQueryParams queryObjectTypes;
 	queryObjectTypes.AddObjectTypesToQuery(ECC_Pawn);
 	queryObjectTypes.AddObjectTypesToQuery(ECC_WorldStatic);
+	queryObjectTypes.AddObjectTypesToQuery(ECC_WorldDynamic);
 	queryObjectTypes.AddObjectTypesToQuery(ECC_PhysicsBody);
-	
-	GetWorld()->LineTraceSingleByObjectType(weaponHitResult, hitStart, hitEnd, queryObjectTypes);
-
+	bool bHitSomething = GetWorld()->LineTraceSingleByObjectType(weaponHitResult, hitStart, hitEnd, queryObjectTypes);
+	if (bHitSomething)
+	{
+		// Check if the hit actor is a enemy
+		if (AEnemyBase* enemyGotHit = Cast<AEnemyBase>(weaponHitResult.GetActor()))
+		{
+			enemyGotHit->ReceivePlayerDamage(WeaponBaseDamage);
+		}
+	}
 }
 
 void UWeaponComponent::WeaponDataResetAndCalculate()
 {
-	if (WeaponDataPreset)
+	UWeaponDataBase* WeaponPresetData = WeaponDataPresetClass->GetDefaultObject<UWeaponDataBase>();
+	if (WeaponPresetData)
 	{
-		WeaponBaseDamage = WeaponDataPreset->WeaponBaseDamage;
+		WeaponBaseDamage = WeaponPresetData->WeaponBaseDamage;
+		WeaponOverheatRate = WeaponPresetData->WeaponOverheatRate;
+		WeaponRPM = WeaponPresetData->WeaponRPM;
+		WeaponMaxRange = WeaponPresetData->WeaponMaxRange;
 
+		CoolDownBetweenShot = 60.0f / WeaponRPM;
 	}
 	else
 	{

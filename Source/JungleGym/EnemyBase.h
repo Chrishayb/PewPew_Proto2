@@ -23,9 +23,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat")
+	float MaxHealth;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	float CurrentHealth;
+
 	// BlurprintImplementable event called when enemy takes damage
 	virtual void ReceivePlayerDamage(float _damage);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "TakeDamage"))
 	void Receive_ReceivePlayerDamage(float _damage);
-
 };
