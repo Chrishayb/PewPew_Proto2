@@ -61,7 +61,7 @@ void UWeaponComponent::WeaponPerformFiring(FTransform _muzzleWorldLocation)
 		// Check if the hit actor is a enemy
 		if (AEnemyBase* enemyGotHit = Cast<AEnemyBase>(weaponHitResult.GetActor()))
 		{
-			enemyGotHit->ReceivePlayerDamage(WeaponBaseDamage);
+			enemyGotHit->EnemyTakeDamage(WeaponBaseDamage);
 		}
 	}
 }
