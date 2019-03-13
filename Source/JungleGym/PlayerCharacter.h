@@ -19,7 +19,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	class UCameraComponent* FPSCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunPoint")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	class UWeaponComponent* WeaponComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	class USceneComponent* GunShootingPoint;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PostProcess")
@@ -96,8 +99,9 @@ protected:
 	void PerformFiring();
 		// Called after PerformFiring() to start fire rate count down
 	void StartFireCountDown();
-
-
+		// Called after PerformFiring() to increase the overheat percentage
+	void OverHeatWeapon(float _value);
+		// 
 
 private:
 

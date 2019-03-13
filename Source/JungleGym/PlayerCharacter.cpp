@@ -10,6 +10,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/PostProcessComponent.h"
+#include "WeaponComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
@@ -40,6 +41,7 @@ APlayerCharacter::APlayerCharacter()
 	PlayerPostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PlayerPostProcess"));
 	PlayerPostProcess->SetupAttachment(RootComponent);
 
+	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -68,7 +70,7 @@ void APlayerCharacter::MoveForward(float _value)
 
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, _value);	
+		AddMovementInput(Direction, _value);
 	}
 
 	// If detected player is not moving forward, cancel the sprint
@@ -145,10 +147,15 @@ void APlayerCharacter::UnSprint()
 
 void APlayerCharacter::PerformFiring()
 {
-
+	
 }
 
 void APlayerCharacter::StartFireCountDown()
+{
+
+}
+
+void APlayerCharacter::OverHeatWeapon(float _value)
 {
 
 }
