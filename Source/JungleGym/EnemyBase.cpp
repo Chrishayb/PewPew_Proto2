@@ -23,6 +23,10 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CurrentHealth <= 0)
+	{
+		Death();
+	}
 }
 
 void AEnemyBase::ReceivePlayerDamage(float _damage)
@@ -36,3 +40,7 @@ void AEnemyBase::EnemyTakeDamage(float _damage)
 	ReceivePlayerDamage(_damage);
 }
 
+void AEnemyBase::Death()
+{
+	K2_DestroyActor();
+}
