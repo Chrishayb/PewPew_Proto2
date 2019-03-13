@@ -22,6 +22,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunPoint")
 	class USceneComponent* GunShootingPoint;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PostProcess")
+	class UPostProcessComponent* PlayerPostProcess;
+
 protected:
 
 	// Values that sets the turnning speed
@@ -29,14 +32,42 @@ protected:
 	float BaseLookupRate;
 
 	// This value gets the default MaxWalkSpeed from movement component and remember it
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
+	float SprintMultiplier;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
+	float SprintFOVMultiplier;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
+	class UMaterialInterface* SpeedLineMaterial;
+	class UMaterialInstanceDynamic* SpeedLineInstance;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float BaseMaxWalkSpeed;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
-	float SprintMultiplier;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float SprintMaxWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float BaseFOV;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float SprintingFOV;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 	float BaseDamage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	float FireRateRPM;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
+	bool bFireInCountDown;
+	
+
+
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 
 protected:
 	// Called when the game starts or when spawned
@@ -59,6 +90,19 @@ protected:
 	// Player sprint and un-sprint
 	void Sprint();
 	void UnSprint();
+
+	// Shooting machanic
+		// Called when successfully shoot, spawn raycast and test to see if hit
+	void PerformFiring();
+		// Called after PerformFiring() to start fire rate count down
+	void StartFireCountDown();
+
+
+
+private:
+
+	// Called in tick to interp the FOV to its desire
+	void UpdateFOV();
 
 
 public:	

@@ -15,6 +15,7 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CurrentHealth = MaxHealth;
 }
 
 // Called every frame
@@ -24,9 +25,14 @@ void AEnemyBase::Tick(float DeltaTime)
 
 }
 
-void AEnemyBase::TakeDamage(float _damage)
+void AEnemyBase::ReceivePlayerDamage(float _damage)
 {
 	// Call the blueprint event
-	ReceieveTakeDamage(_damage);
+	Receive_ReceivePlayerDamage(_damage);
+}
+
+void AEnemyBase::EnemyTakeDamage(float _damage)
+{
+	ReceivePlayerDamage(_damage);
 }
 
