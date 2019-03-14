@@ -5,6 +5,7 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "CollisionQueryParams.h"
+#include "DrawDebugHelpers.h"
 
 #include "WeaponDataBase.h"
 #include "EnemyBase.h"
@@ -26,7 +27,7 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	WeaponDataResetAndCalculate();
-	
+	bReadyToShoot = true;
 }
 
 
@@ -64,6 +65,7 @@ void UWeaponComponent::WeaponPerformFiring(FTransform _muzzleWorldLocation)
 			enemyGotHit->EnemyTakeDamage(WeaponBaseDamage);
 		}
 	}
+	DrawDebugLine(GetWorld(), weaponHitResult.TraceStart, weaponHitResult.TraceEnd, FColor::Red, false, 3.0f, 0, 2.0f);
 }
 
 void UWeaponComponent::WeaponDataResetAndCalculate()
