@@ -57,6 +57,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float SprintingFOV;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
+	bool bRapidFire;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 	float OverheatMax;
 	
@@ -108,6 +111,8 @@ protected:
 	bool bPlayerCanShoot();
 		// Called when successfully shoot, spawn raycast and test to see if hit
 	void FireWeapon();
+		// StopRapidFire
+	void EndRapidFire();
 		// Called after PerformFiring() to increase the overheat percentage
 	void OverHeatWeapon(float _value);
 		// Called when cool down is finished which creats cool down chain until timer gets destroyed
@@ -117,6 +122,9 @@ private:
 
 	// Called in tick to interp the FOV to its desire
 	void UpdateFOV();
+
+	// Called in tick to rapid fire weapon
+	void RapidFire();
 
 	// Called in tick to cool down the weapon
 	void CoolDown(float _deltaTime);
