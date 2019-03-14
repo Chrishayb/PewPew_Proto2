@@ -149,9 +149,11 @@ void APlayerCharacter::TryFire()
 {
 	if (WeaponComponent->IsReadyToShoot())
 	{
-		WeaponComponent->WeaponPerformFiring(GunShootingPoint->GetComponentTransform());
+		WeaponComponent->WeaponPerformFiring(
+			FPSCamera->GetComponentTransform(), 
+			GunShootingPoint->GetComponentLocation()
+		);
 	}
-
 }
 
 void APlayerCharacter::OverHeatWeapon(float _value)
