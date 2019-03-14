@@ -29,6 +29,9 @@ protected:
 
 	// Data Monitor in run time
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	class UParticleSystem* BulletTrace;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
 	float WeaponBaseDamage;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
@@ -68,4 +71,12 @@ public:
 	// Called to return the state of the gun to see if its able to shoot
 	UFUNCTION()
 	FORCEINLINE bool IsReadyToShoot() { return bReadyToShoot; }
+
+	// Called to return the overheat rate of this weapon
+	UFUNCTION()
+	FORCEINLINE float GetOverheatRate() { return WeaponOverheatRate; }
+
+	// Called to return the time of cool down between shot
+	UFUNCTION()
+	FORCEINLINE float GetCoolDownBetweenShot() { return CoolDownBetweenShot; }
 };
