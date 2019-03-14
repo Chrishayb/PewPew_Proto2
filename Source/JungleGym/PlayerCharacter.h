@@ -56,17 +56,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float SprintingFOV;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
-	float BaseDamage;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
-	float FireRateRPM;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
-	bool bFireInCountDown;
-	
-
 
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
@@ -96,9 +85,7 @@ protected:
 
 	// Shooting machanic
 		// Called when successfully shoot, spawn raycast and test to see if hit
-	void PerformFiring();
-		// Called after PerformFiring() to start fire rate count down
-	void StartFireCountDown();
+	void TryFire();
 		// Called after PerformFiring() to increase the overheat percentage
 	void OverHeatWeapon(float _value);
 		// 

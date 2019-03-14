@@ -15,6 +15,7 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	CurrentHealth = MaxHealth;
 }
 
 // Called every frame
@@ -22,6 +23,10 @@ void AEnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CurrentHealth <= 0)
+	{
+		Death();
+	}
 }
 
 void AEnemyBase::ReceivePlayerDamage(float _damage)
@@ -30,3 +35,12 @@ void AEnemyBase::ReceivePlayerDamage(float _damage)
 	Receive_ReceivePlayerDamage(_damage);
 }
 
+void AEnemyBase::EnemyTakeDamage(float _damage)
+{
+	ReceivePlayerDamage(_damage);
+}
+
+void AEnemyBase::Death()
+{
+	K2_DestroyActor();
+}

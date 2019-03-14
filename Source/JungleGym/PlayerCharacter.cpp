@@ -145,14 +145,9 @@ void APlayerCharacter::UnSprint()
 	GetCharacterMovement()->MaxWalkSpeed = BaseMaxWalkSpeed;
 }
 
-void APlayerCharacter::PerformFiring()
+void APlayerCharacter::TryFire()
 {
 	
-}
-
-void APlayerCharacter::StartFireCountDown()
-{
-
 }
 
 void APlayerCharacter::OverHeatWeapon(float _value)
@@ -202,7 +197,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &APlayerCharacter::Sprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayerCharacter::UnSprint);
 
-
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::TryFire);
 
 }
 
