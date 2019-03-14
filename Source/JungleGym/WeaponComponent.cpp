@@ -5,8 +5,10 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "CollisionQueryParams.h"
+#include "DrawDebugHelpers.h"
 
 #include "WeaponDataBase.h"
+#include "PlayerCharacter.h"
 #include "EnemyBase.h"
 
 // Sets default values for this component's properties
@@ -26,7 +28,7 @@ void UWeaponComponent::BeginPlay()
 	Super::BeginPlay();
 
 	WeaponDataResetAndCalculate();
-	
+	bReadyToShoot = true;
 }
 
 
@@ -38,7 +40,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-void UWeaponComponent::WeaponPerformFiring(FTransform _muzzleWorldLocation)
+void UWeaponComponent::WeaponPerformFiring(FTransform _cameraTransform, FVector _muzzleLocation)
 {
 	bReadyToShoot = false;
 	GetWorld()->GetTimerManager().SetTimer(
@@ -48,8 +50,9 @@ void UWeaponComponent::WeaponPerformFiring(FTransform _muzzleWorldLocation)
 		CoolDownBetweenShot);
 
 	FHitResult weaponHitResult;
-	FVector hitStart = _muzzleWorldLocation.GetLocation();
-	FVector hitEnd = hitStart + (_muzzleWorldLocation.GetRotation().GetForwardVector() * WeaponMaxRange);
+	FVector hitStart = _cameraTransform.GetLocation();
+	FVector hitEnd = hitStart + (_cameraTransform.GetRotation().GetForwardVector() * WeaponMaxRange);
+
 	FCollisionObjectQueryParams queryObjectTypes;
 	queryObjectTypes.AddObjectTypesToQuery(ECC_Pawn);
 	queryObjectTypes.AddObjectTypesToQuery(ECC_WorldStatic);
@@ -64,6 +67,7 @@ void UWeaponComponent::WeaponPerformFiring(FTransform _muzzleWorldLocation)
 			enemyGotHit->EnemyTakeDamage(WeaponBaseDamage);
 		}
 	}
+	DrawDebugLine(GetWorld(), _muzzleLocation, weaponHitResult.TraceEnd, FColor::Red, false, 3.0f, 0, 2.0f);
 }
 
 void UWeaponComponent::WeaponDataResetAndCalculate()

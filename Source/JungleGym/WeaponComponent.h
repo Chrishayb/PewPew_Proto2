@@ -63,8 +63,7 @@ public:
 
 	// Called when the player is performing fire with this weapon
 	UFUNCTION()
-	void WeaponPerformFiring(FTransform _muzzleWorldLocation);
-	
+	void WeaponPerformFiring(FTransform _cameraTransform, FVector _muzzleLocation);
 
 	// Called to return the state of the gun to see if its able to shoot
 	UFUNCTION()
