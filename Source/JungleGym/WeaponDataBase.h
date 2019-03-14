@@ -28,4 +28,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float WeaponMaxRange;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	class UParticleSystem* BulletTrace;
+
 };

@@ -6,6 +6,7 @@
 #include "TimerManager.h"
 #include "CollisionQueryParams.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "WeaponDataBase.h"
 #include "PlayerCharacter.h"
@@ -36,7 +37,6 @@ void UWeaponComponent::BeginPlay()
 void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	// ...
 }
 
@@ -52,7 +52,6 @@ void UWeaponComponent::WeaponPerformFiring(FTransform _cameraTransform, FVector 
 	FHitResult weaponHitResult;
 	FVector hitStart = _cameraTransform.GetLocation();
 	FVector hitEnd = hitStart + (_cameraTransform.GetRotation().GetForwardVector() * WeaponMaxRange);
-
 	FCollisionObjectQueryParams queryObjectTypes;
 	queryObjectTypes.AddObjectTypesToQuery(ECC_Pawn);
 	queryObjectTypes.AddObjectTypesToQuery(ECC_WorldStatic);
@@ -67,7 +66,9 @@ void UWeaponComponent::WeaponPerformFiring(FTransform _cameraTransform, FVector 
 			enemyGotHit->EnemyTakeDamage(WeaponBaseDamage);
 		}
 	}
-	DrawDebugLine(GetWorld(), _muzzleLocation, weaponHitResult.TraceEnd, FColor::Red, false, 3.0f, 0, 2.0f);
+	FRotator traceDirection = (weaponHitResult.TraceEnd - _muzzleLocation).Rotation();
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTrace, _muzzleLocation, traceDirection);
+	//DrawDebugLine(GetWorld(), _muzzleLocation, weaponHitResult.TraceEnd, FColor::Cyan, false, 2.0f, 0, 1.0f);
 }
 
 void UWeaponComponent::WeaponDataResetAndCalculate()
@@ -79,6 +80,7 @@ void UWeaponComponent::WeaponDataResetAndCalculate()
 		WeaponOverheatRate = WeaponPresetData->WeaponOverheatRate;
 		WeaponRPM = WeaponPresetData->WeaponRPM;
 		WeaponMaxRange = WeaponPresetData->WeaponMaxRange;
+		BulletTrace = WeaponPresetData->BulletTrace;
 
 		CoolDownBetweenShot = 60.0f / WeaponRPM;
 	}
