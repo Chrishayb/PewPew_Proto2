@@ -35,4 +35,6 @@ public:
 	void Receive_ReceivePlayerDamage(float _damage);
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void EnemyTakeDamage(float _damage);
+
+	void Death();
 };

@@ -10,10 +10,11 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/PostProcessComponent.h"
+#include "WeaponComponent.h"
 #include "Math/UnrealMathUtility.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
-
+#include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "EnemyBase.h"
@@ -40,6 +41,7 @@ APlayerCharacter::APlayerCharacter()
 	PlayerPostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PlayerPostProcess"));
 	PlayerPostProcess->SetupAttachment(RootComponent);
 
+	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -52,6 +54,9 @@ void APlayerCharacter::BeginPlay()
 	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
 	BaseFOV = FPSCamera->FieldOfView;
 	SprintingFOV = BaseFOV * SprintFOVMultiplier;
+	OverheatCurrent = 0.0f;
+	bInForceCoolDown = false;
+	bCoolingDown = false;
 
 	// Create speed line material instance
 	SpeedLineInstance = UMaterialInstanceDynamic::Create(SpeedLineMaterial, this);
@@ -68,7 +73,7 @@ void APlayerCharacter::MoveForward(float _value)
 
 		// get forward vector
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		AddMovementInput(Direction, _value);	
+		AddMovementInput(Direction, _value);
 	}
 
 	// If detected player is not moving forward, cancel the sprint
@@ -143,14 +148,50 @@ void APlayerCharacter::UnSprint()
 	GetCharacterMovement()->MaxWalkSpeed = BaseMaxWalkSpeed;
 }
 
-void APlayerCharacter::PerformFiring()
+bool APlayerCharacter::bPlayerCanShoot()
 {
+	if (bInForceCoolDown)
+	{
+		return false;
+	}
 
+	return true;
 }
 
-void APlayerCharacter::StartFireCountDown()
+void APlayerCharacter::FireWeapon()
 {
+	if (bPlayerCanShoot() && WeaponComponent->IsReadyToShoot())
+	{
+		WeaponComponent->WeaponPerformFiring(
+			FPSCamera->GetComponentTransform(), 
+			GunShootingPoint->GetComponentLocation()
+		);
 
+		//GetWorld()->GetTimerManager().ClearTimer(CoolDownInit_Handle);
+		GetWorld()->GetTimerManager().SetTimer(
+			CoolDownInit_Handle,
+			this,
+			&APlayerCharacter::CoolDownInit,
+			WeaponComponent->GetCoolDownBetweenShot() * 2);
+		bCoolingDown = false;
+
+		OverHeatWeapon(WeaponComponent->GetOverheatRate());
+	}
+}
+
+void APlayerCharacter::OverHeatWeapon(float _value)
+{
+	OverheatCurrent = FMath::Min(OverheatCurrent + _value, OverheatMax);
+	if (OverheatCurrent == OverheatMax)
+	{
+		//GetWorld()->GetTimerManager().ClearTimer(CoolDownInit_Handle);
+		bInForceCoolDown = true;
+	}
+}
+
+void APlayerCharacter::CoolDownInit()
+{
+	bCoolingDown = true;
 }
 
 void APlayerCharacter::UpdateFOV()
@@ -164,6 +205,24 @@ void APlayerCharacter::UpdateFOV()
 	FPSCamera->SetFieldOfView(FMath::Lerp(BaseFOV, SprintingFOV, alphaClampResult));
 }
 
+void APlayerCharacter::CoolDown(float _deltaTime)
+{
+	if (bInForceCoolDown)
+	{
+		OverheatCurrent = FMath::Max(OverheatCurrent - (_deltaTime * (CoolDownRatePerSec * ForceCoolDownMultiplier)), 0.0f);
+	}
+	else if (bInForceCoolDown || bCoolingDown)
+	{
+		OverheatCurrent = FMath::Max(OverheatCurrent - (_deltaTime * CoolDownRatePerSec), 0.0f);	
+	}
+
+	if (OverheatCurrent == 0.0f)
+	{
+		bCoolingDown = false;
+		bInForceCoolDown = false;
+	}
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
@@ -172,6 +231,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 	// Update the FOV for the player
 	UpdateFOV();
 
+	// Check and cool down the weapon
+	CoolDown(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -195,7 +256,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &APlayerCharacter::Sprint);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayerCharacter::UnSprint);
 
-
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 
 }
 

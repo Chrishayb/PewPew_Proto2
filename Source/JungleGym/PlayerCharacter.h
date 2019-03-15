@@ -19,7 +19,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	class UCameraComponent* FPSCamera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunPoint")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	class UWeaponComponent* WeaponComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 	class USceneComponent* GunShootingPoint;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PostProcess")
@@ -53,20 +56,28 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float SprintingFOV;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
-	float BaseDamage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
-	float FireRateRPM;
+	float OverheatMax;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
+	float OverheatCurrent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	float CoolDownRatePerSec;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	float ForceCoolDownMultiplier;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
-	bool bFireInCountDown;
-	
+	bool bCoolingDown;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
+	bool bInForceCoolDown;
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	// Handle to regular cool down time
+	FTimerHandle CoolDownInit_Handle;
+
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 
 protected:
@@ -92,18 +103,23 @@ protected:
 	void UnSprint();
 
 	// Shooting machanic
+
+		// Check if the player is capable of shooting
+	bool bPlayerCanShoot();
 		// Called when successfully shoot, spawn raycast and test to see if hit
-	void PerformFiring();
-		// Called after PerformFiring() to start fire rate count down
-	void StartFireCountDown();
-
-
+	void FireWeapon();
+		// Called after PerformFiring() to increase the overheat percentage
+	void OverHeatWeapon(float _value);
+		// Called when cool down is finished which creats cool down chain until timer gets destroyed
+	void CoolDownInit();
 
 private:
 
 	// Called in tick to interp the FOV to its desire
 	void UpdateFOV();
 
+	// Called in tick to cool down the weapon
+	void CoolDown(float _deltaTime);
 
 public:	
 	// Called every frame
