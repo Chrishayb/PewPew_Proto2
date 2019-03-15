@@ -31,4 +31,16 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	class UParticleSystem* BulletTrace;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float PitchRecoilMin;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float PitchRecoilMax;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float YawRecoilMin;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float YawRecoilMax;
+
 };
