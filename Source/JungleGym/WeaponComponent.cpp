@@ -40,7 +40,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-void UWeaponComponent::WeaponPerformFiring(FTransform _cameraTransform, FVector _muzzleLocation)
+void UWeaponComponent::WeaponPerformFiring(APawn* _weaponUser, FTransform _cameraTransform, FVector _muzzleLocation)
 {
 	bReadyToShoot = false;
 	GetWorld()->GetTimerManager().SetTimer(
@@ -69,6 +69,12 @@ void UWeaponComponent::WeaponPerformFiring(FTransform _cameraTransform, FVector 
 	FRotator traceDirection = (weaponHitResult.TraceEnd - _muzzleLocation).Rotation();
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTrace, _muzzleLocation, traceDirection);
 	//DrawDebugLine(GetWorld(), _muzzleLocation, weaponHitResult.TraceEnd, FColor::Cyan, false, 2.0f, 0, 1.0f);
+
+	float pitchRecoil = FMath::RandRange(PitchRecoilMin, PitchRecoilMax);
+	float yawRecoil = FMath::RandRange(YawRecoilMin, YawRecoilMax);
+
+	_weaponUser->AddControllerPitchInput(pitchRecoil);
+	_weaponUser->AddControllerYawInput(yawRecoil);
 }
 
 void UWeaponComponent::WeaponDataResetAndCalculate()
@@ -81,6 +87,10 @@ void UWeaponComponent::WeaponDataResetAndCalculate()
 		WeaponRPM = WeaponPresetData->WeaponRPM;
 		WeaponMaxRange = WeaponPresetData->WeaponMaxRange;
 		BulletTrace = WeaponPresetData->BulletTrace;
+		PitchRecoilMin = WeaponPresetData->PitchRecoilMin;
+		PitchRecoilMax = WeaponPresetData->PitchRecoilMax;
+		YawRecoilMin = WeaponPresetData->YawRecoilMin;
+		YawRecoilMax = WeaponPresetData->YawRecoilMax;
 
 		CoolDownBetweenShot = 60.0f / WeaponRPM;
 	}

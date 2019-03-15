@@ -49,6 +49,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
 	float CoolDownBetweenShot;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	float PitchRecoilMin;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	float PitchRecoilMax;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	float YawRecoilMin;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon: Stats Monitor")
+	float YawRecoilMax;
+
 
 protected:
 
@@ -66,7 +78,7 @@ public:
 
 	// Called when the player is performing fire with this weapon
 	UFUNCTION()
-	void WeaponPerformFiring(FTransform _cameraTransform, FVector _muzzleLocation);
+	void WeaponPerformFiring(APawn* _weaponUser, FTransform _cameraTransform, FVector _muzzleLocation);
 
 	// Called to return the state of the gun to see if its able to shoot
 	UFUNCTION()

@@ -54,6 +54,7 @@ void APlayerCharacter::BeginPlay()
 	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
 	BaseFOV = FPSCamera->FieldOfView;
 	SprintingFOV = BaseFOV * SprintFOVMultiplier;
+	bRapidFire = false;
 	OverheatCurrent = 0.0f;
 	bInForceCoolDown = false;
 	bCoolingDown = false;
@@ -162,10 +163,11 @@ void APlayerCharacter::FireWeapon()
 {
 	if (bPlayerCanShoot() && WeaponComponent->IsReadyToShoot())
 	{
+		bRapidFire = true;
 		WeaponComponent->WeaponPerformFiring(
+			this,
 			FPSCamera->GetComponentTransform(), 
-			GunShootingPoint->GetComponentLocation()
-		);
+			GunShootingPoint->GetComponentLocation());
 
 		//GetWorld()->GetTimerManager().ClearTimer(CoolDownInit_Handle);
 		GetWorld()->GetTimerManager().SetTimer(
@@ -177,6 +179,11 @@ void APlayerCharacter::FireWeapon()
 
 		OverHeatWeapon(WeaponComponent->GetOverheatRate());
 	}
+}
+
+void APlayerCharacter::EndRapidFire()
+{
+	bRapidFire = false;
 }
 
 void APlayerCharacter::OverHeatWeapon(float _value)
@@ -205,6 +212,14 @@ void APlayerCharacter::UpdateFOV()
 	FPSCamera->SetFieldOfView(FMath::Lerp(BaseFOV, SprintingFOV, alphaClampResult));
 }
 
+void APlayerCharacter::RapidFire()
+{
+	if (bRapidFire)
+	{
+		FireWeapon();
+	}
+}
+
 void APlayerCharacter::CoolDown(float _deltaTime)
 {
 	if (bInForceCoolDown)
@@ -230,6 +245,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	// Update the FOV for the player
 	UpdateFOV();
+
+	// Weapon auto shoot
+	RapidFire();
 
 	// Check and cool down the weapon
 	CoolDown(DeltaTime);
@@ -257,6 +275,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &APlayerCharacter::UnSprint);
 
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::EndRapidFire);
 
 }
 
