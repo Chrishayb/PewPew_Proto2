@@ -165,9 +165,9 @@ void APlayerCharacter::FireWeapon()
 	{
 		bRapidFire = true;
 		WeaponComponent->WeaponPerformFiring(
+			this,
 			FPSCamera->GetComponentTransform(), 
-			GunShootingPoint->GetComponentLocation()
-		);
+			GunShootingPoint->GetComponentLocation());
 
 		//GetWorld()->GetTimerManager().ClearTimer(CoolDownInit_Handle);
 		GetWorld()->GetTimerManager().SetTimer(
