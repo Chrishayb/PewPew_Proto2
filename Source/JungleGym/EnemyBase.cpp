@@ -16,6 +16,7 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 	
 	CurrentHealth = MaxHealth;
+	CanMove = true;
 }
 
 // Called every frame
