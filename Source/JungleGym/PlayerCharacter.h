@@ -52,10 +52,25 @@ protected:
 	float SprintMaxWalkSpeed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	bool bSprinting;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float BaseFOV;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float SprintingFOV;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: General")
+	float MaxHunger;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
+	float CurrentHunger;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: General")
+	float MaxThirst;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
+	float CurrentThirst;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
 	bool bRapidFire;
@@ -135,5 +150,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void TakeDamage(float _value);
 
 };

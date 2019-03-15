@@ -54,6 +54,7 @@ void APlayerCharacter::BeginPlay()
 	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
 	BaseFOV = FPSCamera->FieldOfView;
 	SprintingFOV = BaseFOV * SprintFOVMultiplier;
+	bSprinting = false;
 	bRapidFire = false;
 	OverheatCurrent = 0.0f;
 	bInForceCoolDown = false;
@@ -140,6 +141,7 @@ void APlayerCharacter::Sprint()
 	if (axisValue >= 0.0f)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintMaxWalkSpeed;
+		bSprinting = true;
 	}
 }
 
@@ -147,6 +149,7 @@ void APlayerCharacter::UnSprint()
 {
 	// Reset the max speed to original
 	GetCharacterMovement()->MaxWalkSpeed = BaseMaxWalkSpeed;
+	bSprinting = false;
 }
 
 bool APlayerCharacter::bPlayerCanShoot()
@@ -277,5 +280,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::EndRapidFire);
 
+}
+
+void APlayerCharacter::TakeDamage(float _value)
+{
+	CurrentHunger = FMath::Max(CurrentHunger - _value, 0.0f);
+	
+	/// Check death
+	/// ...
 }
 
