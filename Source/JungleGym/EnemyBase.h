@@ -36,5 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void EnemyTakeDamage(float _damage);
 
+	virtual void OnDeath();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "OnDeath"))
+	void Receive_OnDeath();
+
 	void Death();
 };

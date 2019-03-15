@@ -40,7 +40,13 @@ void AEnemyBase::EnemyTakeDamage(float _damage)
 	ReceivePlayerDamage(_damage);
 }
 
+void AEnemyBase::OnDeath()
+{
+	Receive_OnDeath();
+}
+
 void AEnemyBase::Death()
 {
+	OnDeath();
 	K2_DestroyActor();
 }
