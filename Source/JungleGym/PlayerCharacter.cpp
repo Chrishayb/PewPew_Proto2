@@ -9,6 +9,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "WeaponComponent.h"
 #include "Math/UnrealMathUtility.h"
@@ -18,6 +19,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "EnemyBase.h"
+#include "Pinecone.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -50,8 +52,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// Set default values
-	BaseMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
-	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
+	SetDefaultMovementValue();
 	BaseFOV = FPSCamera->FieldOfView;
 	SprintingFOV = BaseFOV * SprintFOVMultiplier;
 	bSprinting = false;
@@ -138,7 +139,7 @@ void APlayerCharacter::Sprint()
 {
 	// Give the speed a multiplier base on the original max speed
 	float axisValue = InputComponent->GetAxisValue(TEXT("MoveForward"));
-	if (axisValue >= 0.0f)
+	if (axisValue >= 0.0f && bAbleToSprint)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintMaxWalkSpeed;
 		bSprinting = true;
@@ -167,12 +168,12 @@ void APlayerCharacter::FireWeapon()
 	if (bPlayerCanShoot() && WeaponComponent->IsReadyToShoot())
 	{
 		bRapidFire = true;
+
 		WeaponComponent->WeaponPerformFiring(
 			this,
 			FPSCamera->GetComponentTransform(), 
 			GunShootingPoint->GetComponentLocation());
 
-		//GetWorld()->GetTimerManager().ClearTimer(CoolDownInit_Handle);
 		GetWorld()->GetTimerManager().SetTimer(
 			CoolDownInit_Handle,
 			this,
@@ -202,6 +203,25 @@ void APlayerCharacter::OverHeatWeapon(float _value)
 void APlayerCharacter::CoolDownInit()
 {
 	bCoolingDown = true;
+}
+
+void APlayerCharacter::ThrowPinecone(FVector _spawnLocation, FRotator _spawnDirection, float _force)
+{
+	APinecone* pinecone;
+	pinecone = GetWorld()->SpawnActor<APinecone>(PineconeTemplates[0], _spawnLocation, _spawnDirection);
+	pinecone->SphereCollider->AddImpulse(pinecone->GetActorForwardVector() * _force);
+	pinecone->InitPineconeDetonation();
+}
+
+void APlayerCharacter::SetDefaultMovementValue()
+{
+	UCharacterMovementComponent* movementComp = GetCharacterMovement();
+	movementComp->MaxWalkSpeed = DefaultMovementData.WalkSpeed;
+	BaseMaxWalkSpeed = DefaultMovementData.WalkSpeed;
+	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
+	bAbleToSprint = true;
+	movementComp->SetWalkableFloorAngle(DefaultMovementData.WalkableAngle);
+	movementComp->MaxStepHeight = DefaultMovementData.StepHeight;
 }
 
 void APlayerCharacter::UpdateFOV()
@@ -241,10 +261,34 @@ void APlayerCharacter::CoolDown(float _deltaTime)
 	}
 }
 
+void APlayerCharacter::CheckGround()
+{
+	TArray<FName> groundCompTag;
+	UPrimitiveComponent* groundComponent = GetCharacterMovement()->GetMovementBase();
+	if (groundComponent)
+	{
+		if (groundComponent->ComponentHasTag(TEXT("Sand")))
+		{
+			UnSprint();
+			bAbleToSprint = false;
+		}
+		else bAbleToSprint = true;
+
+		if (groundComponent->ComponentHasTag(TEXT("Slide")))
+		{
+			GetCharacterMovement()->SetWalkableFloorAngle(0.0f);
+		}
+		else GetCharacterMovement()->SetWalkableFloorAngle(DefaultMovementData.WalkableAngle);
+	}
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Update movement based on 
+	CheckGround();
 
 	// Update the FOV for the player
 	UpdateFOV();
@@ -282,7 +326,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
-void APlayerCharacter::TakeDamage(float _value)
+void APlayerCharacter::PlayerTakeDamage(float _value)
 {
 	CurrentHunger = FMath::Max(CurrentHunger - _value, 0.0f);
 	

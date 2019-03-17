@@ -45,9 +45,9 @@ public:
 	void InitPineconeDetonation();
 
 	// Called on pinecone detonation
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	virtual void OnDetonation();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Pinecone", meta = (DisplayName = "OnDetonation"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pinecone", meta = (DisplayName = "On Detonation"))
 	void Receive_OnDetonation();
 
 

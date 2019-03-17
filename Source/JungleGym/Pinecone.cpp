@@ -14,6 +14,7 @@ APinecone::APinecone()
 
 	// Create Components
 	SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
+	SphereCollider->SetCollisionProfileName(TEXT("Pinecone"));
 	RootComponent = SphereCollider;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
