@@ -65,7 +65,7 @@ void UWeaponComponent::WeaponPerformFiring(APawn* _weaponUser, FTransform _camer
 		// Check if the hit actor is a enemy
 		if (AEnemyBase* enemyGotHit = Cast<AEnemyBase>(weaponHitResult.GetActor()))
 		{
-			enemyGotHit->EnemyTakeDamage(WeaponBaseDamage);
+			enemyGotHit->ReceivePlayerDamage(WeaponBaseDamage);
 		}
 	}
 	FRotator traceDirection = (weaponHitResult.TraceEnd - _muzzleLocation).Rotation();
