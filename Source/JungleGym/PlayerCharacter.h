@@ -6,6 +6,22 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+USTRUCT(BlueprintType)
+struct FMovementData
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly)
+	float WalkSpeed;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float WalkableAngle;
+
+	UPROPERTY(EditDefaultsOnly)
+	float StepHeight;
+};
+
+
 UCLASS()
 class JUNGLEGYM_API APlayerCharacter : public ACharacter
 {
@@ -30,9 +46,18 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
+	FMovementData DefaultMovementData;
+
 	// Values that sets the turnning speed
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Camera")
 	float BaseTurnRate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Camera")
 	float BaseLookupRate;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	bool bAbleToSprint;
 
 	// This value gets the default MaxWalkSpeed from movement component and remember it
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
@@ -96,7 +121,10 @@ protected:
 	// Handle to regular cool down time
 	FTimerHandle CoolDownInit_Handle;
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Pinecone")
+	TArray<TSubclassOf<class APinecone>> PineconeTemplates;
+	
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -120,11 +148,12 @@ protected:
 	void Sprint();
 	void UnSprint();
 
-	// Shooting machanic
+	/** Shooting machanic */
 
 		// Check if the player is capable of shooting
 	bool bPlayerCanShoot();
 		// Called when successfully shoot, spawn raycast and test to see if hit
+	UFUNCTION(BlueprintCallable)
 	void FireWeapon();
 		// StopRapidFire
 	void EndRapidFire();
@@ -133,7 +162,16 @@ protected:
 		// Called when cool down is finished which creats cool down chain until timer gets destroyed
 	void CoolDownInit();
 
+	/** Piencone(Grenade) Mechanic */
+
+		// Throw the pinecone!!!!!!!!!!!!!
+	UFUNCTION(BlueprintCallable)
+	void ThrowPinecone(FVector _spawnLocation, FRotator _spawnDirection, float _force);
+
 private:
+
+	// Called in BeginPlay() to set the default value
+	void SetDefaultMovementValue();
 
 	// Called in tick to interp the FOV to its desire
 	void UpdateFOV();
@@ -144,6 +182,9 @@ private:
 	// Called in tick to cool down the weapon
 	void CoolDown(float _deltaTime);
 
+	// Called in tick to check what player is standing on
+	void CheckGround();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -152,6 +193,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
-	void TakeDamage(float _value);
+	void PlayerTakeDamage(float _value);
 
 };
