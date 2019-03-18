@@ -42,6 +42,7 @@ void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UWeaponComponent::WeaponPerformFiring(APawn* _weaponUser, FTransform _cameraTransform, FVector _muzzleLocation)
 {
+	// Cooldown system init
 	bReadyToShoot = false;
 	GetWorld()->GetTimerManager().SetTimer(
 		FireRateCountDownTimerHandle, 
@@ -49,6 +50,7 @@ void UWeaponComponent::WeaponPerformFiring(APawn* _weaponUser, FTransform _camer
 		&UWeaponComponent::OnFireRateCountDownFinish, 
 		CoolDownBetweenShot);
 
+	// Bullet(Hit scan)
 	FHitResult weaponHitResult;
 	FVector hitStart = _cameraTransform.GetLocation();
 	FVector hitEnd = hitStart + (_cameraTransform.GetRotation().GetForwardVector() * WeaponMaxRange);
@@ -63,16 +65,16 @@ void UWeaponComponent::WeaponPerformFiring(APawn* _weaponUser, FTransform _camer
 		// Check if the hit actor is a enemy
 		if (AEnemyBase* enemyGotHit = Cast<AEnemyBase>(weaponHitResult.GetActor()))
 		{
-			enemyGotHit->EnemyTakeDamage(WeaponBaseDamage);
+			enemyGotHit->ReceivePlayerDamage(WeaponBaseDamage);
 		}
 	}
 	FRotator traceDirection = (weaponHitResult.TraceEnd - _muzzleLocation).Rotation();
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BulletTrace, _muzzleLocation, traceDirection);
 	//DrawDebugLine(GetWorld(), _muzzleLocation, weaponHitResult.TraceEnd, FColor::Cyan, false, 2.0f, 0, 1.0f);
 
+	// Recoil system
 	float pitchRecoil = FMath::RandRange(PitchRecoilMin, PitchRecoilMax);
 	float yawRecoil = FMath::RandRange(YawRecoilMin, YawRecoilMax);
-
 	_weaponUser->AddControllerPitchInput(pitchRecoil);
 	_weaponUser->AddControllerYawInput(yawRecoil);
 }
@@ -84,6 +86,7 @@ void UWeaponComponent::WeaponDataResetAndCalculate()
 	{
 		WeaponBaseDamage = WeaponPresetData->WeaponBaseDamage;
 		WeaponOverheatRate = WeaponPresetData->WeaponOverheatRate;
+		HydrationDrainRate = WeaponPresetData->HydrationDrainRate;
 		WeaponRPM = WeaponPresetData->WeaponRPM;
 		WeaponMaxRange = WeaponPresetData->WeaponMaxRange;
 		BulletTrace = WeaponPresetData->BulletTrace;

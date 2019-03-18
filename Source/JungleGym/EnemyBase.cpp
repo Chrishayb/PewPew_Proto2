@@ -2,6 +2,9 @@
 
 #include "EnemyBase.h"
 
+#include "Components/CapsuleComponent.h"
+#include "TimerManager.h"
+
 // Sets default values
 AEnemyBase::AEnemyBase()
 {
@@ -19,6 +22,13 @@ void AEnemyBase::BeginPlay()
 	CanMove = true;
 }
 
+void AEnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+}
+
 // Called every frame
 void AEnemyBase::Tick(float DeltaTime)
 {
@@ -29,25 +39,37 @@ void AEnemyBase::ReceivePlayerDamage(float _damage)
 {
 	// Call the blueprint event
 	Receive_ReceivePlayerDamage(_damage);
-}
-
-void AEnemyBase::EnemyTakeDamage(float _damage)
-{
-	ReceivePlayerDamage(_damage);
 
 	if (CurrentHealth <= 0)
 	{
-		Death();
+		EnemyDeath();
 	}
 }
 
-void AEnemyBase::OnDeath()
+void AEnemyBase::EnemyDeath()
 {
 	Receive_OnDeath();
+	
+	K2_DestroyActor();
 }
 
-void AEnemyBase::Death()
+void AEnemyBase::GravityGrenadeEffectByDuration(float _durartion)
 {
-	OnDeath();
-	K2_DestroyActor();
+	CanMove = false;
+	GetCapsuleComponent()->SetSimulatePhysics(true);
+	GetCapsuleComponent()->SetEnableGravity(false);
+
+	FTimerHandle endEffectHandle;
+	GetWorld()->GetTimerManager().SetTimer(endEffectHandle, this, &AEnemyBase::EndGravityGrenadeEffect, _durartion);
+
+	Receive_GravityGrenadeEffect(_durartion);
+}
+
+void AEnemyBase::EndGravityGrenadeEffect()
+{
+	CanMove = true;
+	GetCapsuleComponent()->SetSimulatePhysics(false);
+	GetCapsuleComponent()->SetEnableGravity(true);
+
+	Receive_EndGravityGrenadeEffect();
 }

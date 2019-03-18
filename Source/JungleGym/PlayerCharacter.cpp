@@ -9,6 +9,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/PostProcessComponent.h"
 #include "WeaponComponent.h"
 #include "Math/UnrealMathUtility.h"
@@ -18,6 +19,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "EnemyBase.h"
+#include "Pinecone.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -50,8 +52,7 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	// Set default values
-	BaseMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
-	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
+	SetDefaultMovementValue();
 	BaseFOV = FPSCamera->FieldOfView;
 	SprintingFOV = BaseFOV * SprintFOVMultiplier;
 	bSprinting = false;
@@ -59,6 +60,9 @@ void APlayerCharacter::BeginPlay()
 	OverheatCurrent = 0.0f;
 	bInForceCoolDown = false;
 	bCoolingDown = false;
+
+	CurrentHydration = MaxHydration;
+	CurrentEnergy = MaxEnergy;
 
 	// Create speed line material instance
 	SpeedLineInstance = UMaterialInstanceDynamic::Create(SpeedLineMaterial, this);
@@ -138,10 +142,11 @@ void APlayerCharacter::Sprint()
 {
 	// Give the speed a multiplier base on the original max speed
 	float axisValue = InputComponent->GetAxisValue(TEXT("MoveForward"));
-	if (axisValue >= 0.0f)
+	if (axisValue >= 0.0f && bAbleToSprint)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintMaxWalkSpeed;
 		bSprinting = true;
+		bRapidFire = false;
 	}
 }
 
@@ -152,9 +157,37 @@ void APlayerCharacter::UnSprint()
 	bSprinting = false;
 }
 
+void APlayerCharacter::DehydrateByValue(float _value)
+{
+	CurrentHydration = FMath::Max(CurrentHydration - _value, 0.0f);
+	CheckHydrationLevel();
+}
+
+void APlayerCharacter::HydratingByValue(float _value)
+{
+	CurrentHydration = FMath::Min(CurrentHydration + _value, MaxHydration);
+	CheckHydrationLevel();
+}
+
+void APlayerCharacter::CheckHydrationLevel()
+{
+	if (CurrentHydration <= 0.0f)
+	{
+		UnSprint();
+
+		bDeHydrated = true;
+		bAbleToSprint = false;
+	}
+	else
+	{
+		bDeHydrated = false;
+		bAbleToSprint = true;
+	}
+}
+
 bool APlayerCharacter::bPlayerCanShoot()
 {
-	if (bInForceCoolDown)
+	if (bInForceCoolDown || bSprinting || bDeHydrated)
 	{
 		return false;
 	}
@@ -167,12 +200,12 @@ void APlayerCharacter::FireWeapon()
 	if (bPlayerCanShoot() && WeaponComponent->IsReadyToShoot())
 	{
 		bRapidFire = true;
+
 		WeaponComponent->WeaponPerformFiring(
 			this,
 			FPSCamera->GetComponentTransform(), 
 			GunShootingPoint->GetComponentLocation());
 
-		//GetWorld()->GetTimerManager().ClearTimer(CoolDownInit_Handle);
 		GetWorld()->GetTimerManager().SetTimer(
 			CoolDownInit_Handle,
 			this,
@@ -181,6 +214,7 @@ void APlayerCharacter::FireWeapon()
 		bCoolingDown = false;
 
 		OverHeatWeapon(WeaponComponent->GetOverheatRate());
+		DehydrateByValue(WeaponComponent->GetHydrationDrainRate());
 	}
 }
 
@@ -204,15 +238,45 @@ void APlayerCharacter::CoolDownInit()
 	bCoolingDown = true;
 }
 
-void APlayerCharacter::UpdateFOV()
+void APlayerCharacter::ThrowPinecone(FVector _spawnLocation, FRotator _spawnDirection, float _force)
 {
+	APinecone* pinecone;
+	pinecone = GetWorld()->SpawnActor<APinecone>(PineconeTemplates[0], _spawnLocation, _spawnDirection);
+	pinecone->SphereCollider->AddImpulse(pinecone->GetActorForwardVector() * _force);
+	pinecone->InitPineconeDetonation();
+}
+
+void APlayerCharacter::RealityToggle()
+{
+	/// Wait for implement
+}
+
+void APlayerCharacter::SetDefaultMovementValue()
+{
+	UCharacterMovementComponent* movementComp = GetCharacterMovement();
+	movementComp->MaxWalkSpeed = DefaultMovementData.WalkSpeed;
+	BaseMaxWalkSpeed = DefaultMovementData.WalkSpeed;
+	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
+	bAbleToSprint = true;
+	movementComp->SetWalkableFloorAngle(DefaultMovementData.WalkableAngle);
+	movementComp->MaxStepHeight = DefaultMovementData.StepHeight;
+}
+
+void APlayerCharacter::SprintEffect(float _deltaTime)
+{
+	// Speed line and FOV change
 	float currentMoveSpeed = (GetCharacterMovement()->Velocity * GetActorForwardVector()).Size();
 	float speedDiffWalkSprint = SprintMaxWalkSpeed - BaseMaxWalkSpeed;
 	float clampValue = (currentMoveSpeed - BaseMaxWalkSpeed) / (speedDiffWalkSprint);
 	float alphaClampResult = FMath::Clamp(clampValue, 0.0f, 1.0f);
-	
 	SpeedLineInstance->SetScalarParameterValue(FName("Weight"), alphaClampResult);
 	FPSCamera->SetFieldOfView(FMath::Lerp(BaseFOV, SprintingFOV, alphaClampResult));
+
+	// Dehydration
+	if (bSprinting)
+	{
+		DehydrateByValue(HydrationDrainPerSecOnSprint * _deltaTime);
+	}
 }
 
 void APlayerCharacter::RapidFire()
@@ -241,13 +305,41 @@ void APlayerCharacter::CoolDown(float _deltaTime)
 	}
 }
 
+void APlayerCharacter::CheckGround()
+{
+	TArray<FName> groundCompTag;
+	UPrimitiveComponent* groundComponent = GetCharacterMovement()->GetMovementBase();
+	if (groundComponent)
+	{
+		if (groundComponent->ComponentHasTag(TEXT("Sand")))
+		{
+			UnSprint();
+			bAbleToSprint = false;
+		}
+		else
+		{
+			bAbleToSprint = true;
+			CheckHydrationLevel();
+		}
+
+		if (groundComponent->ComponentHasTag(TEXT("Slide")))
+		{
+			GetCharacterMovement()->SetWalkableFloorAngle(0.0f);
+		}
+		else GetCharacterMovement()->SetWalkableFloorAngle(DefaultMovementData.WalkableAngle);
+	}
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Update movement based on 
+	CheckGround();
+
 	// Update the FOV for the player
-	UpdateFOV();
+	SprintEffect(DeltaTime);
 
 	// Weapon auto shoot
 	RapidFire();
@@ -280,11 +372,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::EndRapidFire);
 
+	PlayerInputComponent->BindAction("RealityToggle", IE_Pressed, this, &APlayerCharacter::RealityToggle);
+
 }
 
-void APlayerCharacter::TakeDamage(float _value)
+void APlayerCharacter::PlayerTakeDamage(float _value)
 {
-	CurrentHunger = FMath::Max(CurrentHunger - _value, 0.0f);
+	CurrentEnergy = FMath::Max(CurrentEnergy - _value, 0.0f);
 	
 	/// Check death
 	/// ...
