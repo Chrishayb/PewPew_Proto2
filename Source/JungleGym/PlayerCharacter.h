@@ -160,6 +160,9 @@ protected:
 
 		// Check hydration level
 	void CheckHydrationLevel();
+		// Blueprint event for dyehydration
+	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "OnDehydration"))
+	void Receive_OnDehydration();
 		// Check energy level (Death)
 	void CheckEnergyLevel();
 

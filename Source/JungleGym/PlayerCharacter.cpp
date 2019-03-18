@@ -175,6 +175,7 @@ void APlayerCharacter::CheckHydrationLevel()
 	if (CurrentHydration <= 0.0f)
 	{
 		UnSprint();
+		Receive_OnDehydration();
 
 		bDeHydrated = true;
 		bAbleToSprint = false;
