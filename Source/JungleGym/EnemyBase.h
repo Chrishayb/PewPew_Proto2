@@ -32,8 +32,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
 	float CurrentHealth;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool CanDamage;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool CanMove;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefaultValue")
+	FRotator DefaultRotation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefaultValue")
+	UMaterial* DefaultMaterial;
 
 	// BlurprintImplementable event called when enemy takes damage
 	UFUNCTION(BlueprintCallable, Category = "Combat")
