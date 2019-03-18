@@ -39,7 +39,7 @@ APlayerCharacter::APlayerCharacter()
 	GetMesh()->SetupAttachment(FPSCamera);
 
 	GunShootingPoint = CreateDefaultSubobject<USceneComponent>(TEXT("GunShootingPoint"));
-	GunShootingPoint->SetupAttachment(GetMesh());
+	GunShootingPoint->SetupAttachment(GetMesh(), TEXT("MuzzlePoint"));
 
 	PlayerPostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PlayerPostProcess"));
 	PlayerPostProcess->SetupAttachment(RootComponent);
