@@ -70,6 +70,7 @@ void AEnemyBase::EndGravityGrenadeEffect()
 	CanMove = true;
 	GetCapsuleComponent()->SetSimulatePhysics(false);
 	GetCapsuleComponent()->SetEnableGravity(true);
+	SetActorRelativeRotation(DefaultRotation);
 
 	Receive_EndGravityGrenadeEffect();
 }
