@@ -237,7 +237,8 @@ void APlayerCharacter::FireWeapon()
 		OverHeatWeapon(WeaponComponent->GetOverheatRate());
 		DehydrateByValue(WeaponComponent->GetHydrationDrainRate());
 
-		Receive_PlayShootingAnim();
+		// Plays the animation montage and sound in BP
+		Receive_OnPlayerFire();
 	}
 }
 

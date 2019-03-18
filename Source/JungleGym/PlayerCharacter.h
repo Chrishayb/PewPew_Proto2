@@ -192,8 +192,8 @@ protected:
 	/** Animation Implementation for blueprint */
 
 		// Shooting animation
-	UFUNCTION(BlueprintImplementableEvent, Category = "Animation", meta = (DisplayName = "PlayShootingAnim"))
-	void Receive_PlayShootingAnim();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Animation", meta = (DisplayName = "PlayerFire"))
+	void Receive_OnPlayerFire();
 
 private:
 
