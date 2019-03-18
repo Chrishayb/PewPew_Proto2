@@ -161,6 +161,11 @@ void APlayerCharacter::UnSprint()
 void APlayerCharacter::DehydrateByValue(float _value)
 {
 	CurrentHydration = FMath::Max(CurrentHydration - _value, 0.0f);
+	if (CurrentHydration <= 0.0f)
+	{
+		Receive_OnDehydration();
+	}
+
 	CheckHydrationLevel();
 }
 
@@ -175,7 +180,6 @@ void APlayerCharacter::CheckHydrationLevel()
 	if (CurrentHydration <= 0.0f)
 	{
 		UnSprint();
-		Receive_OnDehydration();
 
 		bDeHydrated = true;
 		bAbleToSprint = false;
