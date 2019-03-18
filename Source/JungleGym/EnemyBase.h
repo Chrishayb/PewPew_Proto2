@@ -32,8 +32,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
 	float CurrentHealth;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool CanDamage;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool CanMove;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefaultValue")
+	FRotator DefaultRotation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefaultValue")
+	class UMaterial* DefaultMaterial;
 
 	// BlurprintImplementable event called when enemy takes damage
 	UFUNCTION(BlueprintCallable, Category = "Combat")
@@ -58,5 +67,4 @@ public:
 	virtual void EndGravityGrenadeEffect();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "EndGravityGrenadeEffect"))
 	void Receive_EndGravityGrenadeEffect();
-
 };

@@ -49,8 +49,6 @@ void AEnemyBase::ReceivePlayerDamage(float _damage)
 void AEnemyBase::EnemyDeath()
 {
 	Receive_OnDeath();
-	
-	K2_DestroyActor();
 }
 
 void AEnemyBase::GravityGrenadeEffectByDuration(float _durartion)
@@ -70,6 +68,7 @@ void AEnemyBase::EndGravityGrenadeEffect()
 	CanMove = true;
 	GetCapsuleComponent()->SetSimulatePhysics(false);
 	GetCapsuleComponent()->SetEnableGravity(true);
+	SetActorRelativeRotation(DefaultRotation);
 
 	Receive_EndGravityGrenadeEffect();
 }
