@@ -189,6 +189,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void RealityToggle();
 
+	/** Animation Implementation for blueprint */
+
+		// Shooting animation
+	UFUNCTION(BlueprintImplementableEvent, Category = "Animation", meta = (DisplayName = "PlayShootingAnim"))
+	void Receive_PlayShootingAnim();
+
 private:
 
 	// Called in BeginPlay() to set the default value
