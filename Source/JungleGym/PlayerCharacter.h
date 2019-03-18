@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGamePlayDelegate);
+
 USTRUCT(BlueprintType)
 struct FMovementData
 {
@@ -20,8 +22,6 @@ struct FMovementData
 	UPROPERTY(EditDefaultsOnly)
 	float StepHeight;
 };
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGamePlayDelegate);
 
 UCLASS()
 class JUNGLEGYM_API APlayerCharacter : public ACharacter
@@ -95,6 +95,9 @@ protected:
 	float CurrentEnergy;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: General")
+	float EnergyDrainPerSec;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: General")
 	float MaxHydration;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
@@ -155,15 +158,10 @@ protected:
 
 	/** General Combat */
 
-		// Dehydrate the player
-	UFUNCTION(BlueprintCallable)
-	void DehydrateByValue(float _value);
-		// Hydrate the player
-	UFUNCTION(BlueprintCallable)
-	void HydratingByValue(float _value);
 		// Check hydration level
 	void CheckHydrationLevel();
-
+		// Check energy level (Death)
+	void CheckEnergyLevel();
 
 	/** Shooting machanic */
 
@@ -187,6 +185,7 @@ protected:
 
 	/** Reality switch mechanic */
 
+		// Toggle the dimension of imagination and reality
 	void RealityToggle();
 
 
@@ -201,6 +200,9 @@ private:
 	// Called in BeginPlay() to set the default value
 	void SetDefaultMovementValue();
 
+	// Called in tick to drain energy
+	void DrainEnergy(float _deltaTime);
+
 	// Called in tick to interp the FOV to its desire
 	void SprintEffect(float _deltaTime);
 
@@ -213,6 +215,9 @@ private:
 	// Called in tick to check what player is standing on
 	void CheckGround();
 
+	// Called in tick to Finger Glow!!!!
+	void GlowyFingersLOL();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -220,8 +225,21 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/** General Combat */
+
+		// Dehydrate the player
 	UFUNCTION(BlueprintCallable, Category = "Combat")
-	void PlayerTakeDamage(float _value);
+	void DehydrateByValue(float _value);
+		// Hydrate the player
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void HydratingByValue(float _value);
+		// Reduce the energy(health) of the player
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void EnergyDropByValue(float _value);
+		// Increase the energy(health) of the player
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void EnergyGainByValue(float _value);
+
 
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 	FGamePlayDelegate PlayerDeath;
