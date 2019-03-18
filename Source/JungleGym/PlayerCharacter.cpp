@@ -165,7 +165,7 @@ void APlayerCharacter::DehydrateByValue(float _value)
 
 void APlayerCharacter::HydratingByValue(float _value)
 {
-	CurrentHydration = FMath::Min(CurrentHydration - _value, MaxHydration);
+	CurrentHydration = FMath::Min(CurrentHydration + _value, MaxHydration);
 	CheckHydrationLevel();
 }
 
