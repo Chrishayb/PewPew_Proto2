@@ -2,6 +2,7 @@
 
 #include "PlayerCharacter.h"
 
+#include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/Controller.h"
@@ -38,7 +39,7 @@ APlayerCharacter::APlayerCharacter()
 	GetMesh()->SetupAttachment(FPSCamera);
 
 	GunShootingPoint = CreateDefaultSubobject<USceneComponent>(TEXT("GunShootingPoint"));
-	GunShootingPoint->SetupAttachment(GetMesh());
+	GunShootingPoint->SetupAttachment(GetMesh(), TEXT("MuzzlePoint"));
 
 	PlayerPostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PlayerPostProcess"));
 	PlayerPostProcess->SetupAttachment(RootComponent);
@@ -60,6 +61,9 @@ void APlayerCharacter::BeginPlay()
 	OverheatCurrent = 0.0f;
 	bInForceCoolDown = false;
 	bCoolingDown = false;
+
+	CurrentHydration = MaxHydration;
+	CurrentEnergy = MaxEnergy;
 
 	// Create speed line material instance
 	SpeedLineInstance = UMaterialInstanceDynamic::Create(SpeedLineMaterial, this);
@@ -143,6 +147,7 @@ void APlayerCharacter::Sprint()
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintMaxWalkSpeed;
 		bSprinting = true;
+		bRapidFire = false;
 	}
 }
 
@@ -153,9 +158,62 @@ void APlayerCharacter::UnSprint()
 	bSprinting = false;
 }
 
+void APlayerCharacter::DehydrateByValue(float _value)
+{
+	CurrentHydration = FMath::Max(CurrentHydration - _value, 0.0f);
+	if (CurrentHydration <= 0.0f)
+	{
+		Receive_OnDehydration();
+	}
+
+	CheckHydrationLevel();
+}
+
+void APlayerCharacter::HydratingByValue(float _value)
+{
+	CurrentHydration = FMath::Min(CurrentHydration + _value, MaxHydration);
+	CheckHydrationLevel();
+}
+
+void APlayerCharacter::CheckHydrationLevel()
+{
+	if (CurrentHydration <= 0.0f)
+	{
+		UnSprint();
+
+		bDeHydrated = true;
+		bAbleToSprint = false;
+	}
+	else
+	{
+		bDeHydrated = false;
+		bAbleToSprint = true;
+	}
+}
+
+void APlayerCharacter::CheckEnergyLevel()
+{
+	if (CurrentEnergy <= 0.0f)
+	{
+		PlayerDeath.Broadcast();
+	}
+}
+
+void APlayerCharacter::EnergyDropByValue(float _value)
+{
+	CurrentEnergy = FMath::Max(CurrentEnergy - _value, 0.0f);
+	CheckEnergyLevel();
+}
+
+void APlayerCharacter::EnergyGainByValue(float _value)
+{
+	CurrentEnergy = FMath::Min(CurrentEnergy + _value, MaxEnergy);
+	CheckEnergyLevel();
+}
+
 bool APlayerCharacter::bPlayerCanShoot()
 {
-	if (bInForceCoolDown)
+	if (bInForceCoolDown || bSprinting || bDeHydrated)
 	{
 		return false;
 	}
@@ -182,6 +240,10 @@ void APlayerCharacter::FireWeapon()
 		bCoolingDown = false;
 
 		OverHeatWeapon(WeaponComponent->GetOverheatRate());
+		DehydrateByValue(WeaponComponent->GetHydrationDrainRate());
+
+		// Plays the animation montage and sound in BP
+		Receive_OnPlayerFire();
 	}
 }
 
@@ -213,6 +275,11 @@ void APlayerCharacter::ThrowPinecone(FVector _spawnLocation, FRotator _spawnDire
 	pinecone->InitPineconeDetonation();
 }
 
+void APlayerCharacter::RealityToggle()
+{
+	/// Wait for implement
+}
+
 void APlayerCharacter::SetDefaultMovementValue()
 {
 	UCharacterMovementComponent* movementComp = GetCharacterMovement();
@@ -224,15 +291,26 @@ void APlayerCharacter::SetDefaultMovementValue()
 	movementComp->MaxStepHeight = DefaultMovementData.StepHeight;
 }
 
-void APlayerCharacter::UpdateFOV()
+void APlayerCharacter::DrainEnergy(float _deltaTime)
 {
+	EnergyDropByValue(EnergyDrainPerSec * _deltaTime);
+}
+
+void APlayerCharacter::SprintEffect(float _deltaTime)
+{
+	// Speed line and FOV change
 	float currentMoveSpeed = (GetCharacterMovement()->Velocity * GetActorForwardVector()).Size();
 	float speedDiffWalkSprint = SprintMaxWalkSpeed - BaseMaxWalkSpeed;
 	float clampValue = (currentMoveSpeed - BaseMaxWalkSpeed) / (speedDiffWalkSprint);
 	float alphaClampResult = FMath::Clamp(clampValue, 0.0f, 1.0f);
-	
 	SpeedLineInstance->SetScalarParameterValue(FName("Weight"), alphaClampResult);
 	FPSCamera->SetFieldOfView(FMath::Lerp(BaseFOV, SprintingFOV, alphaClampResult));
+
+	// Dehydration
+	if (bSprinting)
+	{
+		DehydrateByValue(HydrationDrainPerSecOnSprint * _deltaTime);
+	}
 }
 
 void APlayerCharacter::RapidFire()
@@ -272,7 +350,11 @@ void APlayerCharacter::CheckGround()
 			UnSprint();
 			bAbleToSprint = false;
 		}
-		else bAbleToSprint = true;
+		else
+		{
+			bAbleToSprint = true;
+			CheckHydrationLevel();
+		}
 
 		if (groundComponent->ComponentHasTag(TEXT("Slide")))
 		{
@@ -282,22 +364,35 @@ void APlayerCharacter::CheckGround()
 	}
 }
 
+void APlayerCharacter::GlowyFingersLOL()
+{
+	float paramValue = OverheatCurrent / OverheatMax * 300.0f;
+
+	GetMesh()->SetScalarParameterValueOnMaterials(TEXT("Burn"), paramValue);
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Update movement based on 
-	CheckGround();
+	// Drain Energy
+	DrainEnergy(DeltaTime);
 
 	// Update the FOV for the player
-	UpdateFOV();
+	SprintEffect(DeltaTime);
+
+	// Update movement based on 
+	CheckGround();
 
 	// Weapon auto shoot
 	RapidFire();
 
 	// Check and cool down the weapon
 	CoolDown(DeltaTime);
+
+	// Glow!!!!
+	GlowyFingersLOL();
 }
 
 // Called to bind functionality to input
@@ -324,13 +419,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &APlayerCharacter::FireWeapon);
 	PlayerInputComponent->BindAction("Fire", IE_Released, this, &APlayerCharacter::EndRapidFire);
 
-}
+	PlayerInputComponent->BindAction("RealityToggle", IE_Pressed, this, &APlayerCharacter::RealityToggle);
 
-void APlayerCharacter::PlayerTakeDamage(float _value)
-{
-	CurrentHunger = FMath::Max(CurrentHunger - _value, 0.0f);
-	
-	/// Check death
-	/// ...
 }
-

@@ -23,6 +23,9 @@ public:
 	float WeaponOverheatRate;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float HydrationDrainRate;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float WeaponRPM;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
