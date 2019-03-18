@@ -59,7 +59,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	bool bAbleToSprint;
 
-	// This value gets the default MaxWalkSpeed from movement component and remember it
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
 	float SprintMultiplier;
 
@@ -69,6 +68,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
 	class UMaterialInterface* SpeedLineMaterial;
 	class UMaterialInstanceDynamic* SpeedLineInstance;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement: Sprint")
+	float HydrationDrainPerSecOnSprint;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float BaseMaxWalkSpeed;
@@ -86,16 +88,19 @@ protected:
 	float SprintingFOV;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: General")
-	float MaxHunger;
+	float MaxEnergy;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
-	float CurrentHunger;
+	float CurrentEnergy;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: General")
-	float MaxThirst;
+	float MaxHydration;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
-	float CurrentThirst;
+	float CurrentHydration;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
+	bool bDeHydrated;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
 	bool bRapidFire;
@@ -124,7 +129,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Pinecone")
 	TArray<TSubclassOf<class APinecone>> PineconeTemplates;
 	
-	
 
 protected:
 	// Called when the game starts or when spawned
@@ -148,6 +152,18 @@ protected:
 	void Sprint();
 	void UnSprint();
 
+	/** General Combat */
+
+		// Dehydrate the player
+	UFUNCTION(BlueprintCallable)
+	void DehydrateByValue(float _value);
+		// Hydrate the player
+	UFUNCTION(BlueprintCallable)
+	void HydratingByValue(float _value);
+		// Check hydration level
+	void CheckHydrationLevel();
+
+
 	/** Shooting machanic */
 
 		// Check if the player is capable of shooting
@@ -168,13 +184,18 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ThrowPinecone(FVector _spawnLocation, FRotator _spawnDirection, float _force);
 
+	/** Reality switch mechanic */
+
+	UFUNCTION(BlueprintCallable)
+	void RealityToggle();
+
 private:
 
 	// Called in BeginPlay() to set the default value
 	void SetDefaultMovementValue();
 
 	// Called in tick to interp the FOV to its desire
-	void UpdateFOV();
+	void SprintEffect(float _deltaTime);
 
 	// Called in tick to rapid fire weapon
 	void RapidFire();

@@ -86,6 +86,7 @@ void UWeaponComponent::WeaponDataResetAndCalculate()
 	{
 		WeaponBaseDamage = WeaponPresetData->WeaponBaseDamage;
 		WeaponOverheatRate = WeaponPresetData->WeaponOverheatRate;
+		HydrationDrainRate = WeaponPresetData->HydrationDrainRate;
 		WeaponRPM = WeaponPresetData->WeaponRPM;
 		WeaponMaxRange = WeaponPresetData->WeaponMaxRange;
 		BulletTrace = WeaponPresetData->BulletTrace;
