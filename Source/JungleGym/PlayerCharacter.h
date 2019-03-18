@@ -215,6 +215,9 @@ private:
 	// Called in tick to check what player is standing on
 	void CheckGround();
 
+	// Called in tick to Finger Glow!!!!
+	void GlowyFingersLOL();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

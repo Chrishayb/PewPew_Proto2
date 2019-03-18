@@ -358,6 +358,13 @@ void APlayerCharacter::CheckGround()
 	}
 }
 
+void APlayerCharacter::GlowyFingersLOL()
+{
+	float paramValue = OverheatCurrent / OverheatMax * 300.0f;
+
+	GetMesh()->SetScalarParameterValueOnMaterials(TEXT("Burn"), paramValue);
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
@@ -377,6 +384,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	// Check and cool down the weapon
 	CoolDown(DeltaTime);
+
+	// Glow!!!!
+	GlowyFingersLOL();
 }
 
 // Called to bind functionality to input
