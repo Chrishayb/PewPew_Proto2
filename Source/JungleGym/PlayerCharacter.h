@@ -21,6 +21,7 @@ struct FMovementData
 	float StepHeight;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FGamePlayDelegate);
 
 UCLASS()
 class JUNGLEGYM_API APlayerCharacter : public ACharacter
@@ -186,8 +187,14 @@ protected:
 
 	/** Reality switch mechanic */
 
-	UFUNCTION(BlueprintCallable)
 	void RealityToggle();
+
+
+	/** Animation Implementation for blueprint */
+
+		// Shooting animation
+	UFUNCTION(BlueprintImplementableEvent, Category = "Animation", meta = (DisplayName = "PlayShootingAnim"))
+	void Receive_PlayShootingAnim();
 
 private:
 
@@ -215,5 +222,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void PlayerTakeDamage(float _value);
+
+	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
+	FGamePlayDelegate PlayerDeath;
 
 };

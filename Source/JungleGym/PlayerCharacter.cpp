@@ -2,6 +2,7 @@
 
 #include "PlayerCharacter.h"
 
+#include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/Controller.h"
@@ -215,6 +216,8 @@ void APlayerCharacter::FireWeapon()
 
 		OverHeatWeapon(WeaponComponent->GetOverheatRate());
 		DehydrateByValue(WeaponComponent->GetHydrationDrainRate());
+
+		Receive_PlayShootingAnim();
 	}
 }
 
