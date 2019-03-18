@@ -186,6 +186,26 @@ void APlayerCharacter::CheckHydrationLevel()
 	}
 }
 
+void APlayerCharacter::CheckEnergyLevel()
+{
+	if (CurrentEnergy <= 0.0f)
+	{
+		PlayerDeath.Broadcast();
+	}
+}
+
+void APlayerCharacter::EnergyDropByValue(float _value)
+{
+	CurrentEnergy = FMath::Max(CurrentEnergy - _value, 0.0f);
+	CheckEnergyLevel();
+}
+
+void APlayerCharacter::EnergyGainByValue(float _value)
+{
+	CurrentEnergy = FMath::Min(CurrentEnergy + _value, MaxEnergy);
+	CheckEnergyLevel();
+}
+
 bool APlayerCharacter::bPlayerCanShoot()
 {
 	if (bInForceCoolDown || bSprinting || bDeHydrated)
@@ -265,6 +285,11 @@ void APlayerCharacter::SetDefaultMovementValue()
 	movementComp->MaxStepHeight = DefaultMovementData.StepHeight;
 }
 
+void APlayerCharacter::DrainEnergy(float _deltaTime)
+{
+	EnergyDropByValue(EnergyDrainPerSec * _deltaTime);
+}
+
 void APlayerCharacter::SprintEffect(float _deltaTime)
 {
 	// Speed line and FOV change
@@ -338,11 +363,14 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Update movement based on 
-	CheckGround();
+	// Drain Energy
+	DrainEnergy(DeltaTime);
 
 	// Update the FOV for the player
 	SprintEffect(DeltaTime);
+
+	// Update movement based on 
+	CheckGround();
 
 	// Weapon auto shoot
 	RapidFire();
@@ -378,12 +406,3 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("RealityToggle", IE_Pressed, this, &APlayerCharacter::RealityToggle);
 
 }
-
-void APlayerCharacter::PlayerTakeDamage(float _value)
-{
-	CurrentEnergy = FMath::Max(CurrentEnergy - _value, 0.0f);
-	
-	/// Check death
-	/// ...
-}
-
