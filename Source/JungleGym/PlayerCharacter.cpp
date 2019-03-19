@@ -61,6 +61,8 @@ void APlayerCharacter::BeginPlay()
 	OverheatCurrent = 0.0f;
 	bInForceCoolDown = false;
 	bCoolingDown = false;
+	DefaultBaseMaxWalkSpeed = BaseMaxWalkSpeed;
+	DefaultSprintMaxWalkSpeed = SprintMaxWalkSpeed;
 
 	CurrentHydration = MaxHydration;
 	CurrentEnergy = MaxEnergy;
@@ -156,6 +158,18 @@ void APlayerCharacter::UnSprint()
 	// Reset the max speed to original
 	GetCharacterMovement()->MaxWalkSpeed = BaseMaxWalkSpeed;
 	bSprinting = false;
+}
+
+void APlayerCharacter::BoostSpeed() {
+	SprintMaxWalkSpeed = SprintMaxWalkSpeed * 3;
+	BaseMaxWalkSpeed = BaseMaxWalkSpeed * 5;
+	FTimerHandle endEffectHandle;
+	GetWorld()->GetTimerManager().SetTimer(endEffectHandle, this, &APlayerCharacter::DefaultSpeed, 10);
+}
+
+void APlayerCharacter::DefaultSpeed() {
+	SprintMaxWalkSpeed = DefaultSprintMaxWalkSpeed;
+	BaseMaxWalkSpeed = DefaultBaseMaxWalkSpeed;
 }
 
 void APlayerCharacter::DehydrateByValue(float _value)
