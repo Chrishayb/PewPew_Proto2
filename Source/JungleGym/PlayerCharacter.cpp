@@ -240,7 +240,7 @@ void APlayerCharacter::FireWeapon()
 			WeaponComponent->GetCoolDownBetweenShot() * 2);
 		bCoolingDown = false;
 
-		OverHeatWeapon(WeaponComponent->GetOverheatRate());
+		//OverHeatWeapon(WeaponComponent->GetOverheatRate());
 		DehydrateByValue(WeaponComponent->GetHydrationDrainRate());
 
 		// Plays the animation montage and sound in BP
@@ -377,8 +377,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	/// De-activate for now
 	// Drain Energy
-	DrainEnergy(DeltaTime);
+	//DrainEnergy(DeltaTime);
 
 	// Update the FOV for the player
 	SprintEffect(DeltaTime);

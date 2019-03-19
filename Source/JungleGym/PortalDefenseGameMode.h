@@ -6,8 +6,10 @@
 #include "GameFramework/GameModeBase.h"
 #include "PortalDefenseGameMode.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDefenseGameplayDelegate);
+
 /**
- * 
+ * This gamemode is for the lolz
  */
 UCLASS()
 class JUNGLEGYM_API APortalDefenseGameMode : public AGameModeBase
@@ -15,6 +17,24 @@ class JUNGLEGYM_API APortalDefenseGameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+
+
+
+
+	UPROPERTY(BlueprintAssignable, Category = "PortalDefenseGameplay")
+	FDefenseGameplayDelegate OnToggleToRealWorld;
+
+	UPROPERTY(BlueprintAssignable, Category = "PortalDefenseGameplay")
+	FDefenseGameplayDelegate OnToggleToImagineWorld;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefenseGameMode")
+	TArray<class AEnemyBase*> EnemyContainer;
+
+	
+public:
+
+	UFUNCTION(BlueprintCallable)
+
 
 	/** AActor Interface */
 	virtual void BeginPlay() override;
@@ -25,10 +45,5 @@ public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	/** End Interface */
 
-
-public:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefenseGameMode")
-	TArray<class AEnemyBase*> EnemyContainer;
 
 };
