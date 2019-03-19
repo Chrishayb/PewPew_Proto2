@@ -377,8 +377,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	/// De-activate for now
 	// Drain Energy
-	DrainEnergy(DeltaTime);
+	//DrainEnergy(DeltaTime);
 
 	// Update the FOV for the player
 	SprintEffect(DeltaTime);
