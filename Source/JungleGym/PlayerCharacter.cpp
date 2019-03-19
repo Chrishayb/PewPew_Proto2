@@ -213,8 +213,9 @@ void APlayerCharacter::EnergyGainByValue(float _value)
 
 bool APlayerCharacter::bPlayerCanShoot()
 {
-	if (bInForceCoolDown || bSprinting || bDeHydrated)
+	if (bInForceCoolDown || bSprinting || bDeHydrated || !bInImagineWorld)
 	{
+		bRapidFire = false;
 		return false;
 	}
 
