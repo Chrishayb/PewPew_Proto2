@@ -240,7 +240,7 @@ void APlayerCharacter::FireWeapon()
 			WeaponComponent->GetCoolDownBetweenShot() * 2);
 		bCoolingDown = false;
 
-		OverHeatWeapon(WeaponComponent->GetOverheatRate());
+		//OverHeatWeapon(WeaponComponent->GetOverheatRate());
 		DehydrateByValue(WeaponComponent->GetHydrationDrainRate());
 
 		// Plays the animation montage and sound in BP
