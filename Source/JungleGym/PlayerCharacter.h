@@ -130,6 +130,9 @@ protected:
 	// Handle to regular cool down time
 	FTimerHandle CoolDownInit_Handle;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat: WorldToggle")
+	bool bInImagineWorld;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Pinecone")
 	TArray<TSubclassOf<class APinecone>> PineconeTemplates;
 	
