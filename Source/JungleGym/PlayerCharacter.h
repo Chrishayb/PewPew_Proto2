@@ -80,6 +80,12 @@ protected:
 	float SprintMaxWalkSpeed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float DefaultBaseMaxWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float DefaultSprintMaxWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	bool bSprinting;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
@@ -246,6 +252,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void EnergyGainByValue(float _value);
 
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void BoostSpeed();
+
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void DefaultSpeed();
 
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 	FGamePlayDelegate PlayerDeath;
