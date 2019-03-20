@@ -112,6 +112,18 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
 	bool bDeHydrated;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
+	int iBrocolliCollected;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
+	int iMushroomCollected;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
+	int iTomatoCollected;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
+	int iPineconeCollected;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 	TSubclassOf<class UUserWidget> CrosshairWidgetClass;
 
@@ -285,6 +297,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void DefaultSpeed();
+
+	UFUNCTION(BlueprintCallable, Category = "Collect")
+	void UpBroccoliCount(int _value);
+
+	UFUNCTION(BlueprintCallable, Category = "Collect")
+	void UpMushroomCount(int _value);
+
+	UFUNCTION(BlueprintCallable, Category = "Collect")
+	void UpTomatoCount(int _value);
 
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 	FGamePlayDelegate PlayerDeath;

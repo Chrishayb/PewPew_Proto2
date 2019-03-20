@@ -471,3 +471,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("RealityToggle", IE_Pressed, this, &APlayerCharacter::RealityToggle);
 
 }
+
+void APlayerCharacter::UpBroccoliCount(int _value) {
+	iBrocolliCollected += _value;
+}
+
+void APlayerCharacter::UpMushroomCount(int _value) {
+	iMushroomCollected += _value;
+}
+
+void APlayerCharacter::UpTomatoCount(int _value) {
+	iTomatoCollected += _value;
+}
