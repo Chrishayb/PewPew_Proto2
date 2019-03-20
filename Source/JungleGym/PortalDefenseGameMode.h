@@ -18,6 +18,8 @@ class JUNGLEGYM_API APortalDefenseGameMode : public AGameModeBase
 	
 public:
 
+	APortalDefenseGameMode();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DefenseGameMode")
 	bool bInRealWorld;
 
@@ -29,8 +31,17 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "PortalDefenseGameplay")
 	FDefenseGameplayDelegate OnToggleToImagineWorld;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DefenseGameMode")
+	TSubclassOf<AActor> SkyBoxClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DefenseGameMode")
+	AActor* SkyBoxActor;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefenseGameMode")
 	TArray<class AEnemyBase*> EnemyContainer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DefenseGameMode")
+	class UPostProcessComponent* WorldTogglePostProcessing;
 
 
 public:
