@@ -472,14 +472,17 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
-void APlayerCharacter::UpBroccoliCount(int _value) {
+void APlayerCharacter::UpBroccoliCount(int _value) 
+{
 	iBrocolliCollected += _value;
 }
 
-void APlayerCharacter::UpMushroomCount(int _value) {
+void APlayerCharacter::UpMushroomCount(int _value) 
+{
 	iMushroomCollected += _value;
 }
 
-void APlayerCharacter::UpTomatoCount(int _value) {
+void APlayerCharacter::UpTomatoCount(int _value) 
+{
 	iTomatoCollected += _value;
 }
