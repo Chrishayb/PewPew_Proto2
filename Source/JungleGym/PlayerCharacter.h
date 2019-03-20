@@ -112,6 +112,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
 	bool bDeHydrated;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	TSubclassOf<class UUserWidget> CrosshairWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
+	class UUserWidget* CrosshairWidget;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
 	bool bRapidFire;
 

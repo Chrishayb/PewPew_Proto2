@@ -18,6 +18,7 @@
 #include "Materials/MaterialInterface.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
 
 #include "PortalDefenseGameMode.h"
 #include "EnemyBase.h"
@@ -60,6 +61,11 @@ void APlayerCharacter::BeginPlay()
 		PDGamemode->OnToggleToRealWorld.AddDynamic(this, &APlayerCharacter::SwapToRealWorld);
 		PDGamemode->OnToggleToImagineWorld.AddDynamic(this, &APlayerCharacter::SwapToImagineWorld);
 	}
+
+	// Create crosshair
+	CrosshairWidget = CreateWidget<UUserWidget>(UGameplayStatics::GetPlayerController(this, 0), CrosshairWidgetClass);
+	if (CrosshairWidget)
+		CrosshairWidget->AddToViewport();
 
 	// Set default values
 	SetDefaultMovementValue();
