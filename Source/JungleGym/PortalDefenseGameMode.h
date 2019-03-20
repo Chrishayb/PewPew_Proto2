@@ -63,22 +63,64 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefenseGamemode: Monitor")
 	AActor* Portal;
 
+	// The enemy spawners
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DefenseGamemode: DefaultClasses")
+	TSubclassOf<AActor> EnemySpawnerClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefenseGamemode: Monitor")
+	TArray<AActor*> EnemySpawners;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DefenseGamemode: General")
+	float WaitingGameStartTime;
+
+protected:
+
 	// Game State
 	FName PortalDefenseState;
+
+	// Wait game start timer handle
+	UPROPERTY(BlueprintReadOnly, Category = "PortalDefenseGameplay")
+	FTimerHandle WaitGameStartHandle;
 
 public:
 
 	// World toggles
 	UFUNCTION(BlueprintCallable, Category = "DefenseGamemode: WorldToggle")
 	void ToggleWorld();
-
 	void SwapToRealWorld();
 	void SwapToImagineWorld();
 
-	// Game State
-		//Updates the match state and calls the appropriate transition functions
-	virtual void SetPortalDefenseState(FName _newState);
+	// Game state handlers
+	UFUNCTION()
+	void HandleWaitingToStartState();
+	UFUNCTION(BlueprintImplementableEvent, Category = "PortalDefenseGameplay", meta = (DisplayName = "HandleWaitingToStartState"))
+	void Receive_HandleWaitingToStartState();
+	UFUNCTION()
+	void HandleAddsPhaseState();
+	UFUNCTION(BlueprintImplementableEvent, Category = "PortalDefenseGameplay", meta = (DisplayName = "HandleAddsPhaseState"))
+	void Receive_HandleAddsPhaseState();
+	UFUNCTION()
+	void HandleBossPhaseState();
+	UFUNCTION(BlueprintImplementableEvent, Category = "PortalDefenseGameplay", meta = (DisplayName = "HandleBossPhaseState"))
+	void Receive_HandleBossPhaseState();
+	UFUNCTION()
+	void HandleEndState();
+	UFUNCTION(BlueprintImplementableEvent, Category = "PortalDefenseGameplay", meta = (DisplayName = "HandleEndState"))
+	void Receive_HandleEndState();
 
+	// Game sequence
+	UFUNCTION()
+	void StartAddsPhase();
+
+	// Game State
+		// Updates the match state and calls the appropriate transition functions
+	virtual void SetPortalDefenseState(FName _newState);
+		// After the set game state, react to it
+	virtual void OnPortalDefenseStateSet();
+	UFUNCTION(BlueprintImplementableEvent, Category = "PortalDefenseGameplay", meta = (DisplayName = "OnPortalDefenseStateSet"))
+	void Receive_OnPortalDefenseStateSet(FName _stateName);
+		// Get the current game state
+	UFUNCTION(BlueprintCallable, Category = "PortalDefenseGameplay")
+	FORCEINLINE FName GetPortalDefenseState() {return PortalDefenseState; }
 
 	/** AActor Interface */
 	virtual void BeginPlay() override;
@@ -89,6 +131,5 @@ public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	virtual void StartPlay() override;
 	/** End Interface */
-
 
 };
