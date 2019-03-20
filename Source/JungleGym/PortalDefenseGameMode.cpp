@@ -149,7 +149,7 @@ void APortalDefenseGameMode::BeginPlay()
 
 	// Get bin actor placed in the game
 	UGameplayStatics::GetAllActorsOfClass(this, BinClass, Bins);
-
+	UGameplayStatics::GetAllActorsOfClass(this, EnemySpawnerClass, EnemySpawners);
 
 }
 

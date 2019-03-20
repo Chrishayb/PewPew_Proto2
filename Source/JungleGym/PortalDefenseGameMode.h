@@ -63,6 +63,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefenseGamemode: Monitor")
 	AActor* Portal;
 
+	// The enemy spawners
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DefenseGamemode: DefaultClasses")
+	TSubclassOf<AActor> EnemySpawnerClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefenseGamemode: Monitor")
+	TArray<AActor*> EnemySpawners;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DefenseGamemode: General")
 	float WaitingGameStartTime;
 
