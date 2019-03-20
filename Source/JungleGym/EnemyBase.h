@@ -83,4 +83,11 @@ public:
 	virtual void SwapToImagineWorld();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "SwapToImagineWorld"))
 	void Receive_SwapToImagineWorld();
+
+	// BlurprintImplementable event to swap target
+	UFUNCTION(BlueprintCallable)
+	void ChangeTarget(AActor* _newTarget);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "ChangeTarget"))
+	void Receive_ChangeTarget(AActor* _newTarget);
+
 };
