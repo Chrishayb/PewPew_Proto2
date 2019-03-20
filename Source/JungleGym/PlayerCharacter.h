@@ -136,6 +136,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Pinecone")
 	TArray<TSubclassOf<class APinecone>> PineconeTemplates;
 	
+	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
+	class APortalDefenseGameMode* PDGamemode;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -193,6 +196,16 @@ protected:
 
 		// Toggle the dimension of imagination and reality
 	void RealityToggle();
+		// Called when swap to real world
+	UFUNCTION()
+	void SwapToRealWorld();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "OnSwapToRealWorld"))
+	void Recevie_OnSwapToRealWorld();
+		// Called when swap to imagine world
+	UFUNCTION()
+	void SwapToImagineWorld();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "OnSwapToImagineWorld"))
+	void Recevie_OnSwapToImagineWorld();
 
 
 	/** Animation Implementation for blueprint */
