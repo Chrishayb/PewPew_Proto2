@@ -80,6 +80,12 @@ protected:
 	float SprintMaxWalkSpeed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float DefaultBaseMaxWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float DefaultSprintMaxWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	bool bSprinting;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
@@ -106,6 +112,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
 	bool bDeHydrated;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	TSubclassOf<class UUserWidget> CrosshairWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
+	class UUserWidget* CrosshairWidget;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
 	bool bRapidFire;
 
@@ -130,9 +142,15 @@ protected:
 	// Handle to regular cool down time
 	FTimerHandle CoolDownInit_Handle;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat: WorldToggle")
+	bool bInImagineWorld;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Pinecone")
 	TArray<TSubclassOf<class APinecone>> PineconeTemplates;
 	
+	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
+	class APortalDefenseGameMode* PDGamemode;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -190,6 +208,16 @@ protected:
 
 		// Toggle the dimension of imagination and reality
 	void RealityToggle();
+		// Called when swap to real world
+	UFUNCTION()
+	void SwapToRealWorld();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "OnSwapToRealWorld"))
+	void Recevie_OnSwapToRealWorld();
+		// Called when swap to imagine world
+	UFUNCTION()
+	void SwapToImagineWorld();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "OnSwapToImagineWorld"))
+	void Recevie_OnSwapToImagineWorld();
 
 
 	/** Animation Implementation for blueprint */
@@ -243,6 +271,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void EnergyGainByValue(float _value);
 
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void BoostSpeed();
+
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void DefaultSpeed();
 
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 	FGamePlayDelegate PlayerDeath;

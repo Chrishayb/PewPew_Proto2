@@ -18,7 +18,9 @@
 #include "Materials/MaterialInterface.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
 
+#include "PortalDefenseGameMode.h"
 #include "EnemyBase.h"
 #include "Pinecone.h"
 
@@ -52,6 +54,19 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Get essential stuff
+	PDGamemode = Cast<APortalDefenseGameMode>(UGameplayStatics::GetGameMode(this));
+	if (PDGamemode)
+	{
+		PDGamemode->OnToggleToRealWorld.AddDynamic(this, &APlayerCharacter::SwapToRealWorld);
+		PDGamemode->OnToggleToImagineWorld.AddDynamic(this, &APlayerCharacter::SwapToImagineWorld);
+	}
+
+	// Create crosshair
+	CrosshairWidget = CreateWidget<UUserWidget>(UGameplayStatics::GetPlayerController(this, 0), CrosshairWidgetClass);
+	if (CrosshairWidget)
+		CrosshairWidget->AddToViewport();
+
 	// Set default values
 	SetDefaultMovementValue();
 	BaseFOV = FPSCamera->FieldOfView;
@@ -61,6 +76,8 @@ void APlayerCharacter::BeginPlay()
 	OverheatCurrent = 0.0f;
 	bInForceCoolDown = false;
 	bCoolingDown = false;
+	DefaultBaseMaxWalkSpeed = BaseMaxWalkSpeed;
+	DefaultSprintMaxWalkSpeed = SprintMaxWalkSpeed;
 
 	CurrentHydration = MaxHydration;
 	CurrentEnergy = MaxEnergy;
@@ -158,6 +175,18 @@ void APlayerCharacter::UnSprint()
 	bSprinting = false;
 }
 
+void APlayerCharacter::BoostSpeed() {
+	SprintMaxWalkSpeed = SprintMaxWalkSpeed * 3;
+	BaseMaxWalkSpeed = BaseMaxWalkSpeed * 5;
+	FTimerHandle endEffectHandle;
+	GetWorld()->GetTimerManager().SetTimer(endEffectHandle, this, &APlayerCharacter::DefaultSpeed, 10);
+}
+
+void APlayerCharacter::DefaultSpeed() {
+	SprintMaxWalkSpeed = DefaultSprintMaxWalkSpeed;
+	BaseMaxWalkSpeed = DefaultBaseMaxWalkSpeed;
+}
+
 void APlayerCharacter::DehydrateByValue(float _value)
 {
 	CurrentHydration = FMath::Max(CurrentHydration - _value, 0.0f);
@@ -213,8 +242,9 @@ void APlayerCharacter::EnergyGainByValue(float _value)
 
 bool APlayerCharacter::bPlayerCanShoot()
 {
-	if (bInForceCoolDown || bSprinting || bDeHydrated)
+	if (bInForceCoolDown || bSprinting || bDeHydrated || !bInImagineWorld)
 	{
+		bRapidFire = false;
 		return false;
 	}
 
@@ -239,7 +269,7 @@ void APlayerCharacter::FireWeapon()
 			WeaponComponent->GetCoolDownBetweenShot() * 2);
 		bCoolingDown = false;
 
-		OverHeatWeapon(WeaponComponent->GetOverheatRate());
+		//OverHeatWeapon(WeaponComponent->GetOverheatRate());
 		DehydrateByValue(WeaponComponent->GetHydrationDrainRate());
 
 		// Plays the animation montage and sound in BP
@@ -277,7 +307,22 @@ void APlayerCharacter::ThrowPinecone(FVector _spawnLocation, FRotator _spawnDire
 
 void APlayerCharacter::RealityToggle()
 {
-	/// Wait for implement
+	if (PDGamemode)
+	{
+		PDGamemode->ToggleWorld();
+	}
+}
+
+void APlayerCharacter::SwapToRealWorld()
+{
+	Recevie_OnSwapToRealWorld();
+
+}
+
+void APlayerCharacter::SwapToImagineWorld()
+{
+	Recevie_OnSwapToImagineWorld();
+
 }
 
 void APlayerCharacter::SetDefaultMovementValue()
@@ -376,8 +421,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	/// De-activate for now
 	// Drain Energy
-	DrainEnergy(DeltaTime);
+	//DrainEnergy(DeltaTime);
 
 	// Update the FOV for the player
 	SprintEffect(DeltaTime);
