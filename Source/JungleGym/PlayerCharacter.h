@@ -118,6 +118,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
 	class UUserWidget* CrosshairWidget;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	float MaxPewVol;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
+	float MinPewVol;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
+	float PewVolModifier;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Shooting")
 	bool bRapidFire;
 

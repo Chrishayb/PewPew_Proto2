@@ -206,6 +206,9 @@ void APlayerCharacter::HydratingByValue(float _value)
 
 void APlayerCharacter::CheckHydrationLevel()
 {
+	PewVolModifier = FMath::Min(CurrentHydration / (MaxHydration * 0.2f), 1.0f);
+	PewVolModifier = PewVolModifier * (MaxPewVol - MinPewVol) + MinPewVol;
+
 	if (CurrentHydration <= 0.0f)
 	{
 		UnSprint();
