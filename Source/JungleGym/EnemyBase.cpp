@@ -102,3 +102,8 @@ void AEnemyBase::SwapToImagineWorld()
 {
 	GetMesh()->SetMaterial(0, DefaultMaterial);
 }
+
+void AEnemyBase::ChangeTarget(AActor* _newTarget)
+{
+	Receive_ChangeTarget(_newTarget);
+}
