@@ -77,7 +77,7 @@ public:
 
 	// Game State
 		//Updates the match state and calls the appropriate transition functions
-	virtual void SetMatchState(FName _newState);
+	virtual void SetPortalDefenseState(FName _newState);
 
 
 	/** AActor Interface */

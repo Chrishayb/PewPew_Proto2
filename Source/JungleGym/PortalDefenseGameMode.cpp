@@ -67,7 +67,7 @@ void APortalDefenseGameMode::SwapToImagineWorld()
 	OnToggleToImagineWorld.Broadcast();
 }
 
-void APortalDefenseGameMode::SetMatchState(FName _newState)
+void APortalDefenseGameMode::SetPortalDefenseState(FName _newState)
 {
 	if (PortalDefenseState == _newState)
 	{
@@ -86,8 +86,8 @@ void APortalDefenseGameMode::BeginPlay()
 	SkyBoxActor->SetActorScale3D(FVector(100.0f, 100.0f, 100.0f));
 	SwapToRealWorld();
 
-	// Get actor class
-	//UGameplayStatics::GetAllActorsOfClass(this, BinClass, Bins);
+	// Get bin actor placed in the game
+	UGameplayStatics::GetAllActorsOfClass(this, BinClass, Bins);
 
 
 }
