@@ -41,8 +41,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefaultValue")
 	FRotator DefaultRotation;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefaultValue")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DefaultValue")
 	class UMaterial* DefaultMaterial;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gameplay")
+	class UMaterial* RealWorldSeeThroughMat;
+
 
 	// BlurprintImplementable event called when enemy takes damage
 	UFUNCTION(BlueprintCallable, Category = "Combat")
@@ -67,4 +71,16 @@ public:
 	virtual void EndGravityGrenadeEffect();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "EndGravityGrenadeEffect"))
 	void Receive_EndGravityGrenadeEffect();
+
+	// BlurprintImplementable event binded to gameplay
+	UFUNCTION()
+	virtual void SwapToRealWorld();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "SwapToRealWorld"))
+	void Receive_SwapToRealWorld();
+
+	// BlurprintImplementable event binded to gameplay
+	UFUNCTION()
+	virtual void SwapToImagineWorld();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "SwapToImagineWorld"))
+	void Receive_SwapToImagineWorld();
 };
