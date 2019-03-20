@@ -5,8 +5,11 @@
 #include "Components/PostProcessComponent.h"
 
 #include "Engine/World.h"
+#include "TimerManager.h"
+#include "Engine/EngineTypes.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "Engine.h"
 
 namespace PortalDefenseState
 {
@@ -34,7 +37,7 @@ void APortalDefenseGameMode::StartPlay()
 
 	bInRealWorld = true;
 
-	
+	SetPortalDefenseState(PortalDefenseState::WaitingToStart);
 
 
 
@@ -67,6 +70,37 @@ void APortalDefenseGameMode::SwapToImagineWorld()
 	OnToggleToImagineWorld.Broadcast();
 }
 
+void APortalDefenseGameMode::HandleWaitingToStartState()
+{
+	// Give the player some time b4 starting the game
+	GetWorld()->GetTimerManager().SetTimer(WaitGameStartHandle, this, &APortalDefenseGameMode::StartAddsPhase, WaitingGameStartTime);
+	
+	Receive_HandleWaitingToStartState();
+}
+
+void APortalDefenseGameMode::HandleAddsPhaseState()
+{
+
+	Receive_HandleAddsPhaseState();
+}
+
+void APortalDefenseGameMode::HandleBossPhaseState()
+{
+
+	Receive_HandleBossPhaseState();
+}
+
+void APortalDefenseGameMode::HandleEndState()
+{
+
+	Receive_HandleEndState();
+}
+
+void APortalDefenseGameMode::StartAddsPhase()
+{
+	SetPortalDefenseState(PortalDefenseState::AddsPhase);
+}
+
 void APortalDefenseGameMode::SetPortalDefenseState(FName _newState)
 {
 	if (PortalDefenseState == _newState)
@@ -75,6 +109,33 @@ void APortalDefenseGameMode::SetPortalDefenseState(FName _newState)
 	}
 
 	PortalDefenseState = _newState;
+	
+	FString SwapGameStateMsg = 
+		FString(TEXT("Swapped to game state: ") + PortalDefenseState.ToString());
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Yellow, SwapGameStateMsg);
+
+	OnPortalDefenseStateSet();
+	Receive_OnPortalDefenseStateSet(_newState);
+}
+
+void APortalDefenseGameMode::OnPortalDefenseStateSet()
+{
+	if (PortalDefenseState == PortalDefenseState::WaitingToStart)
+	{
+		HandleWaitingToStartState();
+	}
+	else if (PortalDefenseState == PortalDefenseState::AddsPhase)
+	{
+		HandleAddsPhaseState();
+	}
+	else if (PortalDefenseState == PortalDefenseState::BossPhase)
+	{
+		HandleBossPhaseState();
+	}
+	else if (PortalDefenseState == PortalDefenseState::End)
+	{
+		void HandleEndState();
+	}
 }
 
 void APortalDefenseGameMode::BeginPlay()
