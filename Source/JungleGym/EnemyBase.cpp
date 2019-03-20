@@ -29,6 +29,13 @@ void AEnemyBase::BeginPlay()
 	{
 		PDGamemode->OnToggleToRealWorld.AddDynamic(this, &AEnemyBase::SwapToRealWorld);
 		PDGamemode->OnToggleToImagineWorld.AddDynamic(this, &AEnemyBase::SwapToImagineWorld);
+
+		if (PDGamemode->bInRealWorld)
+		{
+			SwapToRealWorld();
+		}
+		else SwapToImagineWorld();
+
 	}
 
 	CurrentHealth = MaxHealth;
