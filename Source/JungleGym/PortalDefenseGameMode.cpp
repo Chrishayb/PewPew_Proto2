@@ -6,15 +6,41 @@ void APortalDefenseGameMode::InitGame(const FString& MapName, const FString& Opt
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 
+}
 
+void APortalDefenseGameMode::StartPlay()
+{
+	Super::StartPlay();
+
+	bInRealWorld = true;
+}
+
+void APortalDefenseGameMode::ToggleWorld()
+{
+	if (bInRealWorld)
+	{
+		SwapToImagineWorld();
+	}
+	else SwapToRealWorld();
+}
+
+void APortalDefenseGameMode::SwapToRealWorld()
+{
+	bInRealWorld = true;
+	OnToggleToRealWorld.Broadcast();
+}
+
+void APortalDefenseGameMode::SwapToImagineWorld()
+{
+	bInRealWorld = false;
+	OnToggleToImagineWorld.Broadcast();
 }
 
 void APortalDefenseGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-
+	SwapToRealWorld();
 }
 
 void APortalDefenseGameMode::Tick(float DeltaSeconds)

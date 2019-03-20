@@ -3,7 +3,13 @@
 #include "EnemyBase.h"
 
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Materials/Material.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
+
+#include "PortalDefenseGameMode.h"
 
 // Sets default values
 AEnemyBase::AEnemyBase()
@@ -18,6 +24,13 @@ void AEnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	APortalDefenseGameMode* PDGamemode = Cast<APortalDefenseGameMode>(UGameplayStatics::GetGameMode(this));
+	if (PDGamemode)
+	{
+		PDGamemode->OnToggleToRealWorld.AddDynamic(this, &AEnemyBase::SwapToRealWorld);
+		PDGamemode->OnToggleToImagineWorld.AddDynamic(this, &AEnemyBase::SwapToImagineWorld);
+	}
+
 	CurrentHealth = MaxHealth;
 	CanMove = true;
 }
@@ -71,4 +84,14 @@ void AEnemyBase::EndGravityGrenadeEffect()
 	SetActorRelativeRotation(DefaultRotation);
 
 	Receive_EndGravityGrenadeEffect();
+}
+
+void AEnemyBase::SwapToRealWorld()
+{
+	GetMesh()->SetMaterial(0, RealWorldSeeThroughMat);
+}
+
+void AEnemyBase::SwapToImagineWorld()
+{
+	GetMesh()->SetMaterial(0, DefaultMaterial);
 }

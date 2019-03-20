@@ -19,6 +19,7 @@
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "PortalDefenseGameMode.h"
 #include "EnemyBase.h"
 #include "Pinecone.h"
 
@@ -51,6 +52,14 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Get essential stuff
+	PDGamemode = Cast<APortalDefenseGameMode>(UGameplayStatics::GetGameMode(this));
+	if (PDGamemode)
+	{
+		PDGamemode->OnToggleToRealWorld.AddDynamic(this, &APlayerCharacter::SwapToRealWorld);
+		PDGamemode->OnToggleToImagineWorld.AddDynamic(this, &APlayerCharacter::SwapToImagineWorld);
+	}
 
 	// Set default values
 	SetDefaultMovementValue();
@@ -292,7 +301,22 @@ void APlayerCharacter::ThrowPinecone(FVector _spawnLocation, FRotator _spawnDire
 
 void APlayerCharacter::RealityToggle()
 {
-	/// Wait for implement
+	if (PDGamemode)
+	{
+		PDGamemode->ToggleWorld();
+	}
+}
+
+void APlayerCharacter::SwapToRealWorld()
+{
+	Recevie_OnSwapToRealWorld();
+
+}
+
+void APlayerCharacter::SwapToImagineWorld()
+{
+	Recevie_OnSwapToImagineWorld();
+
 }
 
 void APlayerCharacter::SetDefaultMovementValue()
