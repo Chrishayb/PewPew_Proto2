@@ -5,7 +5,16 @@
 #include "Components/PostProcessComponent.h"
 
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
+
+namespace PortalDefenseState
+{
+	const FName WaitingToStart = FName(TEXT("WaitingToStart"));
+	const FName AddsPhase = FName(TEXT("AddsPhase"));
+	const FName BossPhase = FName(TEXT("BossPhase"));
+	const FName End = FName(TEXT("End"));
+}
 
 APortalDefenseGameMode::APortalDefenseGameMode()
 {
@@ -24,6 +33,11 @@ void APortalDefenseGameMode::StartPlay()
 	Super::StartPlay();
 
 	bInRealWorld = true;
+
+	
+
+
+
 }
 
 void APortalDefenseGameMode::ToggleWorld()
@@ -53,14 +67,29 @@ void APortalDefenseGameMode::SwapToImagineWorld()
 	OnToggleToImagineWorld.Broadcast();
 }
 
+void APortalDefenseGameMode::SetPortalDefenseState(FName _newState)
+{
+	if (PortalDefenseState == _newState)
+	{
+		return;
+	}
+
+	PortalDefenseState = _newState;
+}
+
 void APortalDefenseGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// World Toggle (Set to real world at beginning)
 	SkyBoxActor = GetWorld()->SpawnActor<AActor>(SkyBoxClass, FTransform::Identity);
 	SkyBoxActor->SetActorScale3D(FVector(100.0f, 100.0f, 100.0f));
-
 	SwapToRealWorld();
+
+	// Get bin actor placed in the game
+	UGameplayStatics::GetAllActorsOfClass(this, BinClass, Bins);
+
+
 }
 
 void APortalDefenseGameMode::Tick(float DeltaSeconds)
