@@ -264,6 +264,7 @@ void APlayerCharacter::HitSplashOff()
 void APlayerCharacter::EnergyDropByValue(float _value)
 {
 	CurrentEnergy = FMath::Max(CurrentEnergy - _value, 0.0f);
+	HitSplashOn();
 	CheckEnergyLevel();
 }
 
