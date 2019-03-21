@@ -19,7 +19,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Called when detroyed
+	// Called when destroyed
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
@@ -35,8 +35,20 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
 	bool CanDamage;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool CanMove;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float AttackDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float AttackRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	bool AbleToAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float AttackDelay;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "DefaultValue")
 	FRotator DefaultRotation;
@@ -54,31 +66,31 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "TakeDamage"))
 	void Receive_ReceivePlayerDamage(float _damage);
 	
-	// BlurprintImplementable event called when enemny dies
+	// BlurprintImplementable event called when enemy dies
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void EnemyDeath();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "OnDeath"))
 	void Receive_OnDeath();
 
-	// BlurprintImplementable event called when enemny dies
+	// BlurprintImplementable event called when enemy dies
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	virtual void GravityGrenadeEffectByDuration(float _durartion);
 	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "GravityGrenadeEffect"))
 	void Receive_GravityGrenadeEffect(float _durartion);
 
-	// BlurprintImplementable event called when enemny dies
+	// BlurprintImplementable event called when enemy dies
 	UFUNCTION()
 	virtual void EndGravityGrenadeEffect();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Combat", meta = (DisplayName = "EndGravityGrenadeEffect"))
 	void Receive_EndGravityGrenadeEffect();
 
-	// BlurprintImplementable event binded to gameplay
+	// BlurprintImplementable event binded to Gameplay
 	UFUNCTION()
 	virtual void SwapToRealWorld();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "SwapToRealWorld"))
 	void Receive_SwapToRealWorld();
 
-	// BlurprintImplementable event binded to gameplay
+	// BlurprintImplementable event binded to Gameplay
 	UFUNCTION()
 	virtual void SwapToImagineWorld();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "SwapToImagineWorld"))
