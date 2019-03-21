@@ -40,6 +40,7 @@ void AEnemyBase::BeginPlay()
 
 	CurrentHealth = MaxHealth;
 	CanMove = true;
+
 }
 
 void AEnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -96,14 +97,24 @@ void AEnemyBase::EndGravityGrenadeEffect()
 void AEnemyBase::SwapToRealWorld()
 {
 	GetMesh()->SetMaterial(0, RealWorldSeeThroughMat);
+
+	Receive_SwapToRealWorld();
 }
 
 void AEnemyBase::SwapToImagineWorld()
 {
 	GetMesh()->SetMaterial(0, DefaultMaterial);
+
+	Receive_SwapToImagineWorld();
 }
 
 void AEnemyBase::ChangeTarget(AActor* _newTarget)
 {
 	Receive_ChangeTarget(_newTarget);
+}
+
+void AEnemyBase::SetWorldMoveSpeeds(float _newSpeed)
+{
+	ImaginaryMoveSpeed = _newSpeed;
+	RealMoveSpeed = _newSpeed / 2;
 }

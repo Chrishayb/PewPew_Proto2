@@ -38,6 +38,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	bool CanMove;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	float ImaginaryMoveSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Movement")
+	float RealMoveSpeed;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	float AttackDamage;
 
@@ -102,4 +108,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "ChangeTarget"))
 	void Receive_ChangeTarget(AActor* _newTarget);
 
+	UFUNCTION(BlueprintCallable)
+	void SetWorldMoveSpeeds(float _newSpeed);
 };
