@@ -48,6 +48,9 @@ APlayerCharacter::APlayerCharacter()
 	PlayerPostProcess = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PlayerPostProcess"));
 	PlayerPostProcess->SetupAttachment(RootComponent);
 
+	PlayerHitSplash = CreateDefaultSubobject<UPostProcessComponent>(TEXT("PlayerHitSplash"));
+	PlayerPostProcess->SetupAttachment(RootComponent);
+
 	WeaponComponent = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
 }
 
@@ -87,6 +90,7 @@ void APlayerCharacter::BeginPlay()
 	// Create speed line material instance
 	SpeedLineInstance = UMaterialInstanceDynamic::Create(SpeedLineMaterial, this);
 	PlayerPostProcess->AddOrUpdateBlendable(SpeedLineInstance, 1.0f);
+	PlayerHitSplash->bEnabled = false;
 }
 
 void APlayerCharacter::MoveForward(float _value)
@@ -242,6 +246,19 @@ void APlayerCharacter::CheckEnergyLevel()
 
 		UGameplayStatics::OpenLevel(this, TEXT("GAMEPLAY_YIKES_2"));
 	}
+}
+
+void APlayerCharacter::HitSplashOn()
+{
+	PlayerHitSplash->bEnabled = true;
+
+	FTimerHandle hitTimer;
+	GetWorld()->GetTimerManager().SetTimer(hitTimer, this, &APlayerCharacter::HitSplashOff, 0.1f);
+}
+
+void APlayerCharacter::HitSplashOff()
+{
+	PlayerHitSplash->bEnabled = false;
 }
 
 void APlayerCharacter::EnergyDropByValue(float _value)

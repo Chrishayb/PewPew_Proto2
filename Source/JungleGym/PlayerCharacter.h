@@ -48,6 +48,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PostProcess")
 	class UPostProcessComponent* PlayerPostProcess;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PostProcess")
+	class UPostProcessComponent* PlayerHitSplash;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Movement")
@@ -211,6 +214,12 @@ protected:
 		// Check energy level (Death)
 	void CheckEnergyLevel();
 
+	UFUNCTION(BlueprintCallable)
+	void HitSplashOn();
+	UFUNCTION(BlueprintCallable)
+	void HitSplashOff();
+	
+
 	/** Shooting machanic */
 
 		// Check if the player is capable of shooting
@@ -245,7 +254,6 @@ protected:
 	void SwapToImagineWorld();
 	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "OnSwapToImagineWorld"))
 	void Recevie_OnSwapToImagineWorld();
-
 
 	/** Animation Implementation for blueprint */
 
