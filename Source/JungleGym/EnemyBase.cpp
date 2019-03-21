@@ -97,13 +97,16 @@ void AEnemyBase::EndGravityGrenadeEffect()
 void AEnemyBase::SwapToRealWorld()
 {
 	GetMesh()->SetMaterial(0, RealWorldSeeThroughMat);
-
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("InvisEnemy"));
+	GetMesh()->SetCollisionProfileName(TEXT("InvisEnemy"));
 	Receive_SwapToRealWorld();
 }
 
 void AEnemyBase::SwapToImagineWorld()
 {
 	GetMesh()->SetMaterial(0, DefaultMaterial);
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("Pawn"));
+	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
 
 	Receive_SwapToImagineWorld();
 }
