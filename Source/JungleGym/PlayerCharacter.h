@@ -121,9 +121,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
 	int iTomatoCollected;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: General")
-	int iPineconeCollected;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Shooting")
 	TSubclassOf<class UUserWidget> CrosshairWidgetClass;
 
@@ -166,9 +163,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat: WorldToggle")
 	bool bInImagineWorld;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat: Pinecone")
+	int PineconeCount;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat: Pinecone")
 	TArray<TSubclassOf<class APinecone>> PineconeTemplates;
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
 	class APortalDefenseGameMode* PDGamemode;
 
@@ -306,6 +306,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Collect")
 	void UpTomatoCount(int _value);
+
+	UFUNCTION(BlueprintCallable, Category = "Collect")
+	void UpPinecone(int _value);
 
 	UPROPERTY(BlueprintAssignable, Category = "EventDispatchers")
 	FGamePlayDelegate PlayerDeath;

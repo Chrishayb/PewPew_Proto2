@@ -486,3 +486,8 @@ void APlayerCharacter::UpTomatoCount(int _value)
 {
 	iTomatoCollected += _value;
 }
+
+void APlayerCharacter::UpPinecone(int _value)
+{
+	PineconeCount += _value;
+}
