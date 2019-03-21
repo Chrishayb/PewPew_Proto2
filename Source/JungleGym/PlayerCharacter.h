@@ -21,6 +21,9 @@ struct FMovementData
 
 	UPROPERTY(EditDefaultsOnly)
 	float StepHeight;
+
+	UPROPERTY(EditDefaultsOnly)
+	float SandDecreaseMultiplier;
 };
 
 UCLASS()
@@ -84,6 +87,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	float DefaultSprintMaxWalkSpeed;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
+	float SandSprintSpeed;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement: Sprint")
 	bool bSprinting;

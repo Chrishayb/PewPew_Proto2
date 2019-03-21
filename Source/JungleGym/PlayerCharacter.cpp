@@ -239,6 +239,8 @@ void APlayerCharacter::CheckEnergyLevel()
 	if (CurrentEnergy <= 0.0f)
 	{
 		PlayerDeath.Broadcast();
+
+		UGameplayStatics::OpenLevel(this, TEXT("GAMEPLAY_YIKES_2"));
 	}
 }
 
@@ -349,7 +351,9 @@ void APlayerCharacter::SetDefaultMovementValue()
 	UCharacterMovementComponent* movementComp = GetCharacterMovement();
 	movementComp->MaxWalkSpeed = DefaultMovementData.WalkSpeed;
 	BaseMaxWalkSpeed = DefaultMovementData.WalkSpeed;
-	SprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
+	DefaultSprintMaxWalkSpeed = BaseMaxWalkSpeed * SprintMultiplier;
+	SprintMaxWalkSpeed = DefaultSprintMaxWalkSpeed;
+	SandSprintSpeed = DefaultSprintMaxWalkSpeed * DefaultMovementData.SandDecreaseMultiplier;
 	bAbleToSprint = true;
 	movementComp->SetWalkableFloorAngle(DefaultMovementData.WalkableAngle);
 	movementComp->MaxStepHeight = DefaultMovementData.StepHeight;
@@ -411,13 +415,17 @@ void APlayerCharacter::CheckGround()
 	{
 		if (groundComponent->ComponentHasTag(TEXT("Sand")))
 		{
-			UnSprint();
-			bAbleToSprint = false;
+			SprintMaxWalkSpeed = SandSprintSpeed;
+			if (bSprinting) Sprint();
+			//UnSprint();
+			//bAbleToSprint = false;
 		}
 		else
 		{
-			bAbleToSprint = true;
-			CheckHydrationLevel();
+			SprintMaxWalkSpeed = DefaultSprintMaxWalkSpeed;
+			if (bSprinting) Sprint();
+			//bAbleToSprint = true;
+			//CheckHydrationLevel();
 		}
 
 		if (groundComponent->ComponentHasTag(TEXT("Slide")))
