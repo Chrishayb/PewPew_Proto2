@@ -39,8 +39,6 @@ void APortalDefenseGameMode::StartPlay()
 
 	SetPortalDefenseState(PortalDefenseState::WaitingToStart);
 
-
-
 }
 
 void APortalDefenseGameMode::ToggleWorld()
