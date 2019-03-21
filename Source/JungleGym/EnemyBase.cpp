@@ -40,6 +40,7 @@ void AEnemyBase::BeginPlay()
 
 	CurrentHealth = MaxHealth;
 	CanMove = true;
+
 }
 
 void AEnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -106,4 +107,20 @@ void AEnemyBase::SwapToImagineWorld()
 void AEnemyBase::ChangeTarget(AActor* _newTarget)
 {
 	Receive_ChangeTarget(_newTarget);
+}
+
+void AEnemyBase::ChangeToImaginarySpeed()
+{
+	Recieve_ChangeToImaginarySpeed();
+}
+
+void AEnemyBase::ChangeToRealSpeed()
+{
+	Recieve_ChangeToRealSpeed();
+}
+
+void AEnemyBase::SetWorldMoveSpeeds(float _newSpeed)
+{
+	ImaginaryMoveSpeed = _newSpeed;
+	RealMoveSpeed = _newSpeed / 2;
 }
