@@ -113,7 +113,8 @@ public:
 
 	// Game State
 		// Updates the match state and calls the appropriate transition functions
-	virtual void SetPortalDefenseState(FName _newState);
+	UFUNCTION(BlueprintCallable)
+	void SetPortalDefenseState(FName _newState);
 		// After the set game state, react to it
 	virtual void OnPortalDefenseStateSet();
 	UFUNCTION(BlueprintImplementableEvent, Category = "PortalDefenseGameplay", meta = (DisplayName = "OnPortalDefenseStateSet"))
