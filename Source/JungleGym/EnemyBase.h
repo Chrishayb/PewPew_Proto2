@@ -108,16 +108,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "ChangeTarget"))
 	void Receive_ChangeTarget(AActor* _newTarget);
 
-	UFUNCTION()
-	virtual void ChangeToImaginarySpeed();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "ChangeToImaginaryMoveSpeed"))
-	void Recieve_ChangeToImaginarySpeed();
-
-	UFUNCTION()
-	virtual void ChangeToRealSpeed();
-	UFUNCTION(BlueprintImplementableEvent, Category = "Gameplay", meta = (DisplayName = "ChangeToRealMoveSpeed"))
-	void Recieve_ChangeToRealSpeed();
-
 	UFUNCTION(BlueprintCallable)
 	void SetWorldMoveSpeeds(float _newSpeed);
 };

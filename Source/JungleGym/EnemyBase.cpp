@@ -97,26 +97,20 @@ void AEnemyBase::EndGravityGrenadeEffect()
 void AEnemyBase::SwapToRealWorld()
 {
 	GetMesh()->SetMaterial(0, RealWorldSeeThroughMat);
+
+	Receive_SwapToRealWorld();
 }
 
 void AEnemyBase::SwapToImagineWorld()
 {
 	GetMesh()->SetMaterial(0, DefaultMaterial);
+
+	Receive_SwapToImagineWorld();
 }
 
 void AEnemyBase::ChangeTarget(AActor* _newTarget)
 {
 	Receive_ChangeTarget(_newTarget);
-}
-
-void AEnemyBase::ChangeToImaginarySpeed()
-{
-	Recieve_ChangeToImaginarySpeed();
-}
-
-void AEnemyBase::ChangeToRealSpeed()
-{
-	Recieve_ChangeToRealSpeed();
 }
 
 void AEnemyBase::SetWorldMoveSpeeds(float _newSpeed)
