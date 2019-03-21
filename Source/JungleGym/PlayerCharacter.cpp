@@ -239,6 +239,8 @@ void APlayerCharacter::CheckEnergyLevel()
 	if (CurrentEnergy <= 0.0f)
 	{
 		PlayerDeath.Broadcast();
+
+		UGameplayStatics::OpenLevel(this, TEXT("GAMEPLAY_YIKES_2"));
 	}
 }
 
