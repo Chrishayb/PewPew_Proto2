@@ -24,6 +24,8 @@
 #include "EnemyBase.h"
 #include "Pinecone.h"
 
+#include "Engine.h"
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -192,6 +194,15 @@ void APlayerCharacter::DehydrateByValue(float _value)
 	CurrentHydration = FMath::Max(CurrentHydration - _value, 0.0f);
 	if (CurrentHydration <= 0.0f)
 	{
+		// Force player to switch to real world if dehydrated
+		if (APortalDefenseGameMode* PDGamemode = Cast<APortalDefenseGameMode>(UGameplayStatics::GetGameMode(this)))
+		{
+			if (!PDGamemode->bInRealWorld)
+			{
+				PDGamemode->SwapToRealWorld();
+			}
+		}
+
 		Receive_OnDehydration();
 	}
 
