@@ -302,10 +302,15 @@ void APlayerCharacter::CoolDownInit()
 
 void APlayerCharacter::ThrowPinecone(FVector _spawnLocation, FRotator _spawnDirection, float _force)
 {
+	if (PineconeCount <= 0)
+	{
+		return;
+	}
 	APinecone* pinecone;
 	pinecone = GetWorld()->SpawnActor<APinecone>(PineconeTemplates[0], _spawnLocation, _spawnDirection);
 	pinecone->SphereCollider->AddImpulse(pinecone->GetActorForwardVector() * _force);
 	pinecone->InitPineconeDetonation();
+	PineconeCount--;
 }
 
 void APlayerCharacter::RealityToggle()
@@ -485,4 +490,9 @@ void APlayerCharacter::UpMushroomCount(int _value)
 void APlayerCharacter::UpTomatoCount(int _value) 
 {
 	iTomatoCollected += _value;
+}
+
+void APlayerCharacter::UpPinecone(int _value)
+{
+	PineconeCount += _value;
 }
